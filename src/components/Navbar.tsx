@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Sparkles } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import logoTransparent from "@/assets/logo-transparent.png";
 
 const navItems = [
     { path: "/", label: "Home" },
+    { path: "/corporate", label: "Corporate" },
     { path: "/explore", label: "Explore" },
     { path: "/calendar", label: "Calendar" },
     { path: "/profile", label: "Profile" },
@@ -24,11 +26,12 @@ const Navbar = () => {
                 }`}
         >
             <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-                <Link to="/" className="flex items-center gap-2">
-                    <Sparkles className={`w-6 h-6 ${isHome ? "text-primary-foreground" : "text-primary"}`} />
-                    <span className={`text-xl font-bold tracking-tight ${isHome ? "text-primary-foreground" : "text-foreground"}`}>
-                        Feelora
-                    </span>
+                <Link to="/" className="flex items-center">
+                    <img
+                        src={logoTransparent}
+                        alt="Feelora"
+                        className="h-11 w-auto object-contain sm:h-12"
+                    />
                 </Link>
 
                 {/* Desktop nav */}

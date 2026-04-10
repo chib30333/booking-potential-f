@@ -7,6 +7,7 @@ import Index from "./pages/index";
 import Explore from "./pages/Explore.tsx";
 import Calendar from "./pages/Calendar.tsx";
 import Profile from "./pages/Profile.tsx";
+import Corporate from "./pages/Corporate.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/corporate" element={<Corporate />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/profile" element={<Profile />} />

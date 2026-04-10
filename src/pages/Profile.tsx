@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { BarChart3, Calendar, Heart, Star, TrendingUp, DollarSign, Users, Award } from "lucide-react";
+import { Calendar, Heart, Star, TrendingUp, DollarSign, Users, Award } from "lucide-react";
 import Navbar from "@/components/Navbar";
 
 const Profile = () => {
