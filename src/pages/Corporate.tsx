@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
 import { ArrowRight, BrainCircuit, Building2, CheckCircle2, MapPin, Sparkles, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import corporateHero from "@/assets/corporate-hero.jpg";
 import heroImage from "@/assets/hero.png";
 import yogaImage from "@/assets/activity-yoga.jpg";
 import potteryImage from "@/assets/activity-pottery.jpg";
 import driftingImage from "@/assets/activity-drifting.jpg";
+import artImage from "@/assets/exp-art.jpg";
 
 const benefits = [
     {
@@ -60,9 +60,8 @@ const Corporate = () => {
 
             <section className="relative overflow-hidden pt-28 pb-20">
                 <div className="absolute inset-0">
-                    <img src={corporateHero} alt="Corporate wellness hero" className="h-full w-full object-cover" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-slate-950/60 to-background" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/35 via-transparent to-secondary/25" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(142,92,255,0.28),_transparent_34%),radial-gradient(circle_at_bottom_right,_rgba(49,193,171,0.18),_transparent_30%),linear-gradient(135deg,_rgba(8,15,28,0.96),_rgba(20,32,54,0.92)_42%,_rgba(34,23,62,0.96))]" />
+                    <div className="absolute inset-y-0 left-0 w-1/2 bg-[radial-gradient(circle_at_left,_rgba(255,255,255,0.08),_transparent_48%)]" />
                 </div>
 
                 <div className="relative container mx-auto px-6">
@@ -105,9 +104,22 @@ const Corporate = () => {
                             initial={{ opacity: 0, x: 24 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.7, delay: 0.1 }}
-                            className="glass-card overflow-hidden p-3"
+                            className="relative"
                         >
-                            <img src={heroImage} alt="Product preview" className="h-full w-full rounded-2xl object-cover" />
+                            <div className="absolute -inset-4 rounded-[2rem] bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 blur-2xl" />
+                            <div className="relative grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-4">
+                                    <img src={yogaImage} alt="Team yoga experience" className="h-52 w-full rounded-[1.75rem] object-cover shadow-2xl shadow-black/25" />
+                                    <img src={artImage} alt="Creative wellness session" className="h-44 w-full rounded-[1.75rem] object-cover shadow-2xl shadow-black/25" />
+                                </div>
+                                <div className="space-y-4 pt-8">
+                                    <img src={potteryImage} alt="Workshop experience" className="h-44 w-full rounded-[1.75rem] object-cover shadow-2xl shadow-black/25" />
+                                    <img src={driftingImage} alt="Energy reset experience" className="h-52 w-full rounded-[1.75rem] object-cover shadow-2xl shadow-black/25" />
+                                </div>
+                            </div>
+                            <div className="relative mt-5 glass-card overflow-hidden p-3">
+                                <img src={heroImage} alt="Product preview" className="h-full w-full rounded-2xl object-cover" />
+                            </div>
                         </motion.div>
                     </div>
                 </div>

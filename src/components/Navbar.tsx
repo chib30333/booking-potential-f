@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import logoTransparent from "@/assets/logo-transparent.png";
+import feeloraLogo from "@/assets/feelora-logo.svg";
 
 const navItems = [
     { path: "/", label: "Home" },
@@ -15,7 +15,7 @@ const navItems = [
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
-    const isHome = location.pathname === "/";
+    const isHome = location.pathname === "/" || location.pathname === "/corporate";
 
     return (
         <motion.nav
@@ -28,9 +28,9 @@ const Navbar = () => {
             <div className="container mx-auto px-6 py-4 flex items-center justify-between">
                 <Link to="/" className="flex items-center">
                     <img
-                        src={logoTransparent}
+                        src={feeloraLogo}
                         alt="Feelora"
-                        className="h-11 w-auto object-contain sm:h-12"
+                        className="h-10 w-auto object-contain sm:h-11"
                     />
                 </Link>
 
