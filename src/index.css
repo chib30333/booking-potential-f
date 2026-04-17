@@ -65,6 +65,13 @@
     @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-lg;
   }
 
+  .header-shell {
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 248, 251, 0.92)),
+      linear-gradient(135deg, rgba(251, 113, 133, 0.06), rgba(99, 102, 241, 0.05));
+    @apply border border-white/70 backdrop-blur-2xl shadow-[0_18px_60px_rgba(15,23,42,0.1)];
+  }
+
   .glass-card {
     @apply bg-white/80 backdrop-blur-xl border border-white/40 shadow-md rounded-2xl;
   }
