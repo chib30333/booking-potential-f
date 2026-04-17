@@ -1,10 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Calendar, Heart, Star, TrendingUp, DollarSign, Users, Award } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { useProfileDashboard } from "@/features/profile/hooks/useProfileDashboard";
 
 const Profile = () => {
-    const [isProvider, setIsProvider] = useState(false);
+    const {
+        customerStats,
+        providerStats,
+        emotionStats,
+        recentBookings,
+        displayName,
+        initials,
+        joinedLabel,
+        isProviderAccount,
+    } = useProfileDashboard();
+    const [isProvider, setIsProvider] = useState(isProviderAccount);
+
+    useEffect(() => {
+        setIsProvider(isProviderAccount);
+    }, [isProviderAccount]);
 
     return (
         <div className="min-h-screen bg-background">
@@ -16,11 +30,11 @@ const Profile = () => {
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                             <div className="flex items-center gap-5">
                                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-foreground text-2xl font-bold">
-                                    AJ
+                                    {initials}
                                 </div>
                                 <div>
-                                    <h1 className="text-2xl font-bold text-foreground">Alex Johnson</h1>
-                                    <p className="text-muted-foreground">Emotion explorer since 2025</p>
+                                    <h1 className="text-2xl font-bold text-foreground">{displayName}</h1>
+                                    <p className="text-muted-foreground">{joinedLabel}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -45,12 +59,7 @@ const Profile = () => {
                         <motion.div key="customer" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                             {/* Stats */}
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                                {[
-                                    { icon: Calendar, label: "Booked", value: "24", color: "text-primary" },
-                                    { icon: Star, label: "Completed", value: "18", color: "text-mood-adventure" },
-                                    { icon: Heart, label: "Favorites", value: "12", color: "text-mood-social" },
-                                    { icon: Award, label: "Joy Score", value: "92%", color: "text-mood-creative" },
-                                ].map((stat, i) => (
+                                {customerStats.map((stat, i) => (
                                     <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="glass-card p-6 text-center hover-lift">
                                         <stat.icon className={`w-6 h-6 mx-auto mb-2 ${stat.color}`} />
                                         <p className="text-2xl font-bold text-foreground">{stat.value}</p>
@@ -63,13 +72,7 @@ const Profile = () => {
                             <div className="glass-card p-6 mb-8">
                                 <h2 className="text-lg font-bold text-foreground mb-6">Emotional Journey</h2>
                                 <div className="space-y-4">
-                                    {[
-                                        { mood: "Relaxation", pct: 35, color: "bg-secondary" },
-                                        { mood: "Adventure", pct: 28, color: "bg-mood-adventure" },
-                                        { mood: "Social", pct: 20, color: "bg-mood-social" },
-                                        { mood: "Creative", pct: 12, color: "bg-mood-creative" },
-                                        { mood: "Romantic", pct: 5, color: "bg-primary" },
-                                    ].map((item) => (
+                                    {emotionStats.map((item) => (
                                         <div key={item.mood}>
                                             <div className="flex justify-between text-sm mb-1">
                                                 <span className="text-foreground font-medium">{item.mood}</span>
@@ -92,11 +95,7 @@ const Profile = () => {
                             <div className="glass-card p-6">
                                 <h2 className="text-lg font-bold text-foreground mb-4">Recent Bookings</h2>
                                 <div className="space-y-3">
-                                    {[
-                                        { title: "Sunrise Yoga", date: "Apr 6", status: "Upcoming", mood: "relaxing" },
-                                        { title: "Cooking Class", date: "Mar 28", status: "Completed", mood: "social" },
-                                        { title: "Lake Kayaking", date: "Mar 20", status: "Completed", mood: "adventure" },
-                                    ].map((booking) => (
+                                    {recentBookings.map((booking) => (
                                         <div key={booking.title} className="flex items-center justify-between p-4 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-3 h-3 rounded-full ${booking.mood === "relaxing" ? "bg-secondary" : booking.mood === "social" ? "bg-mood-social" : "bg-mood-adventure"}`} />
@@ -117,12 +116,7 @@ const Profile = () => {
                         /* Provider Dashboard */
                         <motion.div key="provider" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                                {[
-                                    { icon: Calendar, label: "Total Bookings", value: "156", color: "text-primary" },
-                                    { icon: DollarSign, label: "Revenue", value: "$12,480", color: "text-mood-creative" },
-                                    { icon: Users, label: "Customers", value: "89", color: "text-secondary" },
-                                    { icon: TrendingUp, label: "Growth", value: "+24%", color: "text-mood-adventure" },
-                                ].map((stat, i) => (
+                                {providerStats.map((stat, i) => (
                                     <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="glass-card p-6 text-center hover-lift">
                                         <stat.icon className={`w-6 h-6 mx-auto mb-2 ${stat.color}`} />
                                         <p className="text-2xl font-bold text-foreground">{stat.value}</p>
