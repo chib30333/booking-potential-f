@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import logo from "@/assets/logo.png";
 
 interface AuthShellProps {
   title: string;
@@ -21,7 +22,7 @@ const AuthShell = ({ title, description, children, footer }: AuthShellProps) => 
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-sky-500 via-cyan-400 to-indigo-500 text-white shadow-[0_14px_28px_rgba(56,189,248,0.35)]">
-              <Sparkles className="h-5 w-5" />
+              <img src={logo} alt="Feelora logo" className="h-8 w-8 object-contain" />
             </div>
             <div>
               <p className="text-sm font-semibold tracking-[0.34em] text-slate-900 uppercase">

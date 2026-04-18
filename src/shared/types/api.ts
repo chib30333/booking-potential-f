@@ -40,6 +40,23 @@ export interface ReferenceDataResponse {
     label: string;
     description?: string;
   }>;
+  categoryTaxonomy: Array<{
+    key: string;
+    label: string;
+    emoji?: string;
+    description: string;
+    options: Array<{
+      name: string;
+      slug: string;
+      description: string;
+    }>;
+  }>;
+  smartFilterCombos: Array<{
+    slug: string;
+    label: string;
+    tags: string[];
+    description: string;
+  }>;
   subscriptionPlans: Array<{
     id: string;
     code: string;

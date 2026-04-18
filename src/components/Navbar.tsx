@@ -9,10 +9,10 @@ import {
   LogOut,
   Menu,
   Settings,
-  Sparkles,
   User,
   X,
 } from "lucide-react";
+import logo from "@/assets/logo.png";
 import { getMe } from "@/shared/api/auth";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 import { getStoredAccessToken } from "@/shared/lib/auth";
@@ -23,7 +23,6 @@ const navItems = [
   { path: "/corporate", label: "Corporate" },
   { path: "/explore", label: "Explore" },
   { path: "/calendar", label: "Calendar" },
-  { path: "/profile", label: "Profile" },
 ];
 
 const accountLinks = [
@@ -98,10 +97,6 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, []);
 
-  useEffect(() => {
-    setIsAccountOpen(false);
-  }, [isAuthenticated, location.pathname]);
-
   return (
     <motion.header
       initial={{ y: -24, opacity: 0 }}
@@ -122,18 +117,8 @@ const Navbar = () => {
             : "border border-transparent bg-transparent shadow-none backdrop-blur-0",
         )}
       >
-        <Link to="/" className="flex min-w-0 items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-sky-500 via-cyan-400 to-indigo-500 text-white shadow-[0_14px_28px_rgba(56,189,248,0.35)]">
-            <Sparkles className="h-5 w-5" />
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold tracking-[0.34em] text-slate-900 uppercase">
-              Feelora
-            </p>
-            <p className="truncate text-xs text-slate-500">
-              Curated escapes for every mood
-            </p>
-          </div>
+        <Link to="/" className="">
+          <img src={logo} alt="Feelora logo" className="w-24 object-contain" />
         </Link>
 
         <div className="hidden items-center gap-1 rounded-full bg-white/65 p-1 lg:flex">
@@ -144,7 +129,10 @@ const Navbar = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                onClick={() => setIsAccountOpen(false)}
+                onClick={() => {
+                  setIsAccountOpen(false);
+                  setIsMenuOpen(false);
+                }}
                 className={cn(
                   "rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300",
                   isActive
@@ -235,7 +223,10 @@ const Navbar = () => {
                             <Link
                               key={item.label}
                               to={item.path}
-                              onClick={() => setIsAccountOpen(false)}
+                              onClick={() => {
+                                setIsAccountOpen(false);
+                                setIsMenuOpen(false);
+                              }}
                               className="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900"
                             >
                               <Icon className="h-4 w-4 text-slate-500" />
@@ -247,7 +238,10 @@ const Navbar = () => {
 
                       <button
                         type="button"
-                        onClick={() => logoutMutation.mutate()}
+                        onClick={() => {
+                          setIsAccountOpen(false);
+                          logoutMutation.mutate();
+                        }}
                         className="mt-2 flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-50"
                       >
                         <LogOut className="h-4 w-4" />
@@ -301,7 +295,7 @@ const Navbar = () => {
           >
             <div className="header-shell rounded-[30px] p-4">
               {isAuthenticated ? (
-                <div className="mb-4 rounded-[24px] bg-linear-to-br from-slate-900 via-slate-800 to-slate-700 p-4 text-white">
+                <div className="mb-4 rounded-3xl bg-linear-to-br from-slate-900 via-slate-800 to-slate-700 p-4 text-white">
                   <div className="flex items-center gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 font-semibold">
                       {initials}
