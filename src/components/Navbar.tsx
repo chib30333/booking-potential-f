@@ -241,6 +241,7 @@ const Navbar = () => {
                         onClick={() => {
                           setIsAccountOpen(false);
                           logoutMutation.mutate();
+                          window.location.href = "/login";
                         }}
                         className="mt-2 flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-50"
                       >
@@ -354,6 +355,7 @@ const Navbar = () => {
                   onClick={() => {
                     setIsMenuOpen(false);
                     logoutMutation.mutate();
+                    window.location.href = "/login";
                   }}
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-100"
                 >
