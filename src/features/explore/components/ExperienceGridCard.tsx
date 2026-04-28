@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Heart, Star } from "lucide-react";
+import { Link } from "react-router-dom";
 import LazyImage from "@/components/LazyImage";
 import type { ExploreExperience } from "../data/fallbackExperiences";
 
@@ -9,7 +10,7 @@ interface ExperienceGridCardProps {
 }
 
 const ExperienceGridCard = ({ experience, index }: ExperienceGridCardProps) => {
-  return (
+  const cardBody = (
     <motion.div
       key={experience.id}
       initial={{ opacity: 0, y: 20 }}
@@ -53,6 +54,14 @@ const ExperienceGridCard = ({ experience, index }: ExperienceGridCardProps) => {
         </div>
       </div>
     </motion.div>
+  );
+
+  return experience.slug ? (
+    <Link to={`/services/${experience.slug}`} className="block">
+      {cardBody}
+    </Link>
+  ) : (
+    cardBody
   );
 };
 

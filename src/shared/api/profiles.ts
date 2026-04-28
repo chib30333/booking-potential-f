@@ -12,3 +12,23 @@ export function getProviderProfile() {
     auth: true,
   }).then((response) => response.data);
 }
+
+export interface OnboardingPayload {
+  age: number;
+  cityId: string;
+  moodNotes?: string;
+  preferredRadiusKm?: number;
+  emotionPreferences: Array<{ emotion: string; score: number }>;
+}
+
+export function submitCustomerOnboarding(input: OnboardingPayload) {
+  return request<{ success: true; data: CustomerProfileDto }>(
+    "/customer-profile/onboarding",
+    {
+      method: "POST",
+      auth: true,
+      body: JSON.stringify(input),
+    }
+  ).then((response) => response.data);
+}
+

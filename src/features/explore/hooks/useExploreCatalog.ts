@@ -39,6 +39,7 @@ function formatDuration(durationMinutes: number) {
 function mapServiceToExperience(service: PublicServiceCardDto, index: number): ExploreExperience {
   return {
     id: service.id,
+    slug: service.slug,
     title: service.title,
     category: service.category.name,
     mood: emotionLabelMap[service.emotionTag] ?? service.emotionTag,
@@ -53,7 +54,7 @@ function mapServiceToExperience(service: PublicServiceCardDto, index: number): E
 export function useExploreCatalog() {
   const servicesQuery = useQuery({
     queryKey: ["public-services"],
-    queryFn: listPublicServices,
+    queryFn: () => listPublicServices(),
   });
 
   const referenceDataQuery = useQuery({

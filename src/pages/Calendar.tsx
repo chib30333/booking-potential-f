@@ -18,7 +18,7 @@ const Calendar = () => {
     const [currentMonth, setCurrentMonth] = useState(new Date(2026, 3, 1)); // April 2026
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
     const [view, setView] = useState<"month" | "timeline">("timeline");
-    const { events } = useCalendarEvents();
+    const { events, isLoading, isEmpty, isError } = useCalendarEvents();
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -64,6 +64,22 @@ const Calendar = () => {
                             </button>
                         ))}
                     </div>
+
+                    {isLoading ? (
+                        <div className="glass-card p-6 mb-6 text-sm text-muted-foreground">
+                            Loading your bookings...
+                        </div>
+                    ) : null}
+                    {isError ? (
+                        <div className="glass-card p-6 mb-6 text-sm text-rose-600">
+                            Couldn't load your bookings. Please try again later.
+                        </div>
+                    ) : null}
+                    {isEmpty ? (
+                        <div className="glass-card p-6 mb-6 text-sm text-muted-foreground">
+                            You don't have any bookings yet. Browse <a className="font-medium text-primary" href="/explore">experiences</a> to get started.
+                        </div>
+                    ) : null}
 
                     {/* Month navigation */}
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="glass-card p-6 mb-6">

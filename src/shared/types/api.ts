@@ -99,6 +99,48 @@ export interface PaginatedResponse<T> {
   };
 }
 
+export interface PublicSlotDto {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  emotionTag: string;
+  availableCount: number;
+  priceAmount: number;
+  currency: string;
+  notes: string | null;
+}
+
+export interface PublicServiceDetailDto {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+  emotionTag: string;
+  priceAmount: number;
+  currency: string;
+  durationMinutes: number;
+  capacityDefault: number;
+  coverImageUrl: string | null;
+  category: ReferenceEntity;
+  city: ReferenceEntity;
+  provider: {
+    id: string;
+    brandName: string;
+    bio: string | null;
+    averageRating: number;
+    totalReviews: number;
+  };
+  images: Array<{ id: string; imageUrl: string; sortOrder: number }>;
+}
+
+export interface CreateBookingResponse {
+  booking: BookingResponseDto;
+}
+
+export interface CheckoutUrlResponse {
+  checkoutUrl: string;
+}
+
 export interface BookingResponseDto {
   id: string;
   status: string;

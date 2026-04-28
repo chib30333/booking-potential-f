@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthShell from "@/features/auth/components/AuthShell";
 import AuthTextField from "@/features/auth/components/AuthTextField";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
+import { getDefaultRedirectPath } from "@/features/auth/lib/redirectByRole";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { loginMutation } = useAuthSession();
+  const fromState = (location.state as { from?: string } | null)?.from;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -30,7 +33,10 @@ const Login = () => {
           await loginMutation.mutateAsync(
             { email, password },
             {
-              onSuccess: () => navigate("/profile"),
+              onSuccess: (result) => {
+                const dest = fromState ?? getDefaultRedirectPath(result.user.role);
+                navigate(dest, { replace: true });
+              },
             }
           );
         }}
