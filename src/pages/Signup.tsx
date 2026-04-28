@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthShell from "@/features/auth/components/AuthShell";
 import AuthTextField from "@/features/auth/components/AuthTextField";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
+import { getDefaultRedirectPath } from "@/features/auth/lib/redirectByRole";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -33,7 +34,8 @@ const Signup = () => {
           await registerMutation.mutateAsync(
             { email, password, firstName, lastName, role },
             {
-              onSuccess: () => navigate("/profile"),
+              onSuccess: (result) =>
+                navigate(getDefaultRedirectPath(result.user.role), { replace: true }),
             }
           );
         }}

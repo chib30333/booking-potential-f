@@ -7,6 +7,7 @@ import expHiking from "@/assets/exp-hiking.jpg";
 
 export interface ExploreExperience {
   id: string;
+  slug?: string;
   title: string;
   category: string;
   mood: string;

@@ -5,10 +5,6 @@ import { Toaster } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/index";
 import Explore from "./pages/Explore.tsx";
-import ServiceDetail from "./pages/ServiceDetail.tsx";
-import JoyMap from "./pages/JoyMap.tsx";
-import ProviderDashboard from "./pages/ProviderDashboard.tsx";
-import AdminDashboard from "./pages/AdminDashboard.tsx";
 import Calendar from "./pages/Calendar.tsx";
 import Profile from "./pages/Profile.tsx";
 import Corporate from "./pages/Corporate.tsx";
@@ -37,31 +33,6 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/corporate" element={<Corporate />} />
           <Route path="/explore" element={<Explore />} />
-          <Route path="/services/:slug" element={<ServiceDetail />} />
-          <Route
-            path="/joy-map"
-            element={
-              <RequireAuth roles={["CUSTOMER"]}>
-                <JoyMap />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/provider"
-            element={
-              <RequireAuth roles={["PROVIDER"]}>
-                <ProviderDashboard />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <RequireAuth roles={["MANAGER", "ADMIN"]}>
-                <AdminDashboard />
-              </RequireAuth>
-            }
-          />
           <Route
             path="/calendar"
             element={

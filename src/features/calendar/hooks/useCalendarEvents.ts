@@ -2,10 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { listMyBookings } from "@/shared/api/bookings";
 import { getStoredAccessToken } from "@/shared/lib/auth";
 import type { BookingResponseDto } from "@/shared/types/api";
-import {
-  fallbackCalendarEvents,
-  type CalendarEvent,
-} from "../data/fallbackCalendarEvents";
+import { type CalendarEvent } from "../data/fallbackCalendarEvents";
 
 const emotionToMood: Record<string, CalendarEvent["mood"]> = {
   CALM: "relaxing",
@@ -45,14 +42,13 @@ export function useCalendarEvents() {
     enabled: Boolean(token),
   });
 
-  const events =
-    bookingsQuery.data?.bookings.length
-      ? bookingsQuery.data.bookings.map(mapBookingToEvent)
-      : fallbackCalendarEvents;
+  const events: CalendarEvent[] =
+    bookingsQuery.data?.bookings.map(mapBookingToEvent) ?? [];
 
   return {
     events,
     isLoading: bookingsQuery.isLoading,
-    isUsingFallback: !token || !bookingsQuery.data?.bookings.length,
+    isError: bookingsQuery.isError,
+    isEmpty: !bookingsQuery.isLoading && events.length === 0,
   };
 }
