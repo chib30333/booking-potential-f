@@ -31,6 +31,10 @@ function mapBookingToEvent(booking: BookingResponseDto): CalendarEvent {
     mood: emotionToMood[booking.slot.emotionTag] ?? "exciting",
     location: booking.slot.provider.brandName,
     description: booking.notes || `Booking with ${booking.slot.provider.brandName}`,
+    bookingId: booking.id,
+    status: booking.status,
+    qrCodeValue: booking.qrCodeValue ?? null,
+    startsAt: booking.slot.startsAt,
   };
 }
 

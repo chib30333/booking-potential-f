@@ -151,6 +151,7 @@ export interface BookingResponseDto {
   cancelledAt: string | null;
   refundAmount: number | null;
   paymentExpiresAt: string | null;
+  qrCodeValue: string | null;
   createdAt: string;
   slot: {
     id: string;
