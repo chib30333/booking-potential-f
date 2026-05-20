@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import AuthShell from "@/features/auth/components/AuthShell";
 import AuthTextField from "@/features/auth/components/AuthTextField";
 import { forgotPassword } from "@/shared/api/auth";
 
 const ForgotPassword = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const mutation = useMutation({
     mutationFn: forgotPassword,
@@ -13,13 +15,13 @@ const ForgotPassword = () => {
 
   return (
     <AuthShell
-      title="Reset your password"
-      description="Enter your email and we’ll generate a secure reset link for your account."
+      title={t("auth.forgot.shellTitle")}
+      description={t("auth.forgot.shellDescription")}
       footer={
         <span>
-          Remembered it?{" "}
+          {t("auth.forgot.footerPrompt")}{" "}
           <Link to="/login" className="font-semibold text-primary hover:text-primary/80">
-            Back to login
+            {t("auth.forgot.footerCta")}
           </Link>
         </span>
       }
@@ -32,19 +34,17 @@ const ForgotPassword = () => {
         }}
       >
         <div>
-          <h2 className="text-3xl font-bold text-foreground">Forgot password</h2>
-          <p className="mt-2 text-muted-foreground">
-            We&apos;ll send password reset instructions if the account exists.
-          </p>
+          <h2 className="text-3xl font-bold text-foreground">{t("auth.forgot.title")}</h2>
+          <p className="mt-2 text-muted-foreground">{t("auth.forgot.subtitle")}</p>
         </div>
 
         <AuthTextField
-          label="Email"
+          label={t("auth.common.email")}
           type="email"
           value={email}
           onChange={setEmail}
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder={t("auth.common.emailPlaceholder")}
         />
 
         {mutation.isSuccess ? (
@@ -55,7 +55,7 @@ const ForgotPassword = () => {
                 className="font-semibold text-primary hover:text-primary/80"
                 href={mutation.data.debugResetUrl}
               >
-                Open debug reset link
+                {t("auth.forgot.debugLink")}
               </a>
             ) : null}
           </div>
@@ -65,7 +65,7 @@ const ForgotPassword = () => {
           <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {mutation.error instanceof Error
               ? mutation.error.message
-              : "Unable to request a reset right now."}
+              : t("auth.forgot.errorFallback")}
           </div>
         ) : null}
 
@@ -74,7 +74,7 @@ const ForgotPassword = () => {
           disabled={mutation.isPending}
           className="w-full rounded-2xl bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {mutation.isPending ? "Sending reset link..." : "Send reset link"}
+          {mutation.isPending ? t("auth.forgot.submitting") : t("auth.forgot.submit")}
         </button>
       </form>
     </AuthShell>

@@ -1,0 +1,181 @@
+{
+  "common": {
+    "loading": "Loading…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "all": "All",
+    "yes": "Yes",
+    "no": "No",
+    "language": "Language"
+  },
+  "nav": {
+    "home": "Home",
+    "corporate": "Corporate",
+    "explore": "Explore",
+    "calendar": "Calendar",
+    "login": "Login",
+    "signup": "Sign up",
+    "signOut": "Sign out",
+    "account": "Account",
+    "billing": "Billing",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "menu": "Menu",
+    "memberAccount": "Member account",
+    "providerAccount": "Provider account",
+    "signedInAs": "Signed in as",
+    "accountSubtitle": "Manage your profile, upcoming plans, and premium perks.",
+    "latestUpdates": "Latest Updates"
+  },
+  "home": {
+    "hero": {
+      "heroAlt": "St. Basil's Cathedral at sunset, Moscow Red Square",
+      "titleStart": "Your life, full of",
+      "titleHighlight": "emotions",
+      "subtitle": "Discover experiences that make you feel alive. Let our AI guide you to your next moment of joy.",
+      "assistantLabel": "AI Experience Assistant",
+      "inputPlaceholder": "How do you want to feel today?",
+      "send": "Send",
+      "suggestions": {
+        "bored": "I feel bored",
+        "weekend": "Plan my weekend",
+        "exciting": "I want something exciting"
+      }
+    },
+    "featured": {
+      "titleStart": "Featured",
+      "titleHighlight": "Experiences",
+      "subtitle": "Handpicked moments designed to spark joy and create lasting memories",
+      "favorite": "Add to favourites"
+    },
+    "categories": {
+      "titleStart": "How do you want to",
+      "titleHighlight": "feel",
+      "subtitle": "Choose your mood, discover your experience",
+      "items": {
+        "adventure": "Adventure",
+        "relaxation": "Relaxation",
+        "social": "Social",
+        "creative": "Creative",
+        "romantic": "Romantic",
+        "entertainment": "Entertainment"
+      }
+    },
+    "testimonials": {
+      "titleStart": "Real",
+      "titleHighlight": "feelings",
+      "titleEnd": ", real stories",
+      "items": {
+        "0": {
+          "text": "Feelora helped me rediscover the joy in everyday life. The sunset yoga session was pure magic.",
+          "mood": "Relaxed & Refreshed"
+        },
+        "1": {
+          "text": "I was stuck in a rut. One weekend adventure through Feelora and I felt completely alive again.",
+          "mood": "Excited & Energized"
+        },
+        "2": {
+          "text": "The cooking class brought my friend group closer. We laughed so hard — best evening in months!",
+          "mood": "Connected & Happy"
+        }
+      }
+    },
+    "footer": {
+      "copyright": "© 2026 Feelora. Crafted with emotion."
+    }
+  },
+  "auth": {
+    "common": {
+      "email": "Email",
+      "emailPlaceholder": "you@example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Minimum 8 characters",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "confirmPlaceholder": "Re-enter your password",
+      "firstName": "First name",
+      "firstNamePlaceholder": "Ava",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Morgan",
+      "forgotPassword": "Forgot password?"
+    },
+    "login": {
+      "shellTitle": "Welcome back to Feelora",
+      "shellDescription": "Sign in to manage bookings, discover new experiences, and keep your emotional roadmap in sync.",
+      "footerPrompt": "Don't have an account?",
+      "footerCta": "Create one",
+      "title": "Login",
+      "subtitle": "Use your email and password to continue.",
+      "passwordPlaceholder": "Enter your password",
+      "secureNote": "Secure session with refresh-token cookie support.",
+      "errorFallback": "Unable to sign in right now.",
+      "submitting": "Signing in…",
+      "submit": "Sign in"
+    },
+    "signup": {
+      "shellTitle": "Create your Feelora account",
+      "shellDescription": "Join as a customer or provider without changing the product's current experience-driven interface.",
+      "footerPrompt": "Already have an account?",
+      "footerCta": "Sign in",
+      "title": "Sign up",
+      "subtitle": "Create an account to start booking or listing experiences.",
+      "accountType": "Account type",
+      "customer": "Customer",
+      "customerDescription": "Book and manage experiences.",
+      "provider": "Provider",
+      "providerDescription": "Offer services and manage bookings.",
+      "errorFallback": "Unable to create the account right now.",
+      "submitting": "Creating account…",
+      "submit": "Create account"
+    },
+    "forgot": {
+      "shellTitle": "Reset your password",
+      "shellDescription": "Enter your email and we'll generate a secure reset link for your account.",
+      "footerPrompt": "Remembered it?",
+      "footerCta": "Back to login",
+      "title": "Forgot password",
+      "subtitle": "We'll send password reset instructions if the account exists.",
+      "debugLink": "Open debug reset link",
+      "errorFallback": "Unable to request a reset right now.",
+      "submitting": "Sending reset link…",
+      "submit": "Send reset link"
+    },
+    "reset": {
+      "shellTitle": "Choose a new password",
+      "shellDescription": "Set a fresh password for your account using the secure reset token from your email.",
+      "footerPrompt": "Need a new link?",
+      "footerCta": "Request another reset email",
+      "title": "Reset password",
+      "subtitle": "Enter your new password below.",
+      "missingToken": "This reset link is missing its token. Request a new password reset email.",
+      "successSuffix": "Redirecting to login…",
+      "errorFallback": "Unable to reset the password right now.",
+      "submitting": "Resetting password…",
+      "submit": "Reset password"
+    }
+  },
+  "billing": {
+    "title": "Billing & subscription",
+    "currentSubscription": "Current subscription",
+    "choosePlan": "Choose a plan",
+    "paymentHistory": "Payment history",
+    "subscriptionHistory": "Subscription history",
+    "cancelAtPeriodEnd": "Cancel at period end",
+    "cancelImmediately": "Cancel immediately"
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "passwordChange": "Change password",
+    "preferences": "Preferences",
+    "providerProfile": "Provider profile"
+  }
+}

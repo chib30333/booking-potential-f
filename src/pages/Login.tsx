@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AuthShell from "@/features/auth/components/AuthShell";
 import AuthTextField from "@/features/auth/components/AuthTextField";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 import { getDefaultRedirectPath } from "@/features/auth/lib/redirectByRole";
 
 const Login = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { loginMutation } = useAuthSession();
@@ -15,13 +17,13 @@ const Login = () => {
 
   return (
     <AuthShell
-      title="Welcome back to Feelora"
-      description="Sign in to manage bookings, discover new experiences, and keep your emotional roadmap in sync."
+      title={t("auth.login.shellTitle")}
+      description={t("auth.login.shellDescription")}
       footer={
         <span>
-          Don&apos;t have an account?{" "}
+          {t("auth.login.footerPrompt")}{" "}
           <Link to="/signup" className="font-semibold text-primary hover:text-primary/80">
-            Create one
+            {t("auth.login.footerCta")}
           </Link>
         </span>
       }
@@ -42,36 +44,32 @@ const Login = () => {
         }}
       >
         <div>
-          <h2 className="text-3xl font-bold text-foreground">Login</h2>
-          <p className="mt-2 text-muted-foreground">
-            Use your email and password to continue.
-          </p>
+          <h2 className="text-3xl font-bold text-foreground">{t("auth.login.title")}</h2>
+          <p className="mt-2 text-muted-foreground">{t("auth.login.subtitle")}</p>
         </div>
 
         <AuthTextField
-          label="Email"
+          label={t("auth.common.email")}
           type="email"
           value={email}
           onChange={setEmail}
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder={t("auth.common.emailPlaceholder")}
         />
 
         <AuthTextField
-          label="Password"
+          label={t("auth.common.password")}
           type="password"
           value={password}
           onChange={setPassword}
           autoComplete="current-password"
-          placeholder="Enter your password"
+          placeholder={t("auth.login.passwordPlaceholder")}
         />
 
         <div className="flex items-center justify-between gap-4">
-          <span className="text-sm text-muted-foreground">
-            Secure session with refresh-token cookie support.
-          </span>
+          <span className="text-sm text-muted-foreground">{t("auth.login.secureNote")}</span>
           <Link to="/forgot-password" className="text-sm font-medium text-primary hover:text-primary/80">
-            Forgot password?
+            {t("auth.common.forgotPassword")}
           </Link>
         </div>
 
@@ -79,7 +77,7 @@ const Login = () => {
           <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {loginMutation.error instanceof Error
               ? loginMutation.error.message
-              : "Unable to sign in right now."}
+              : t("auth.login.errorFallback")}
           </div>
         ) : null}
 
@@ -88,7 +86,7 @@ const Login = () => {
           disabled={loginMutation.isPending}
           className="w-full rounded-2xl bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {loginMutation.isPending ? "Signing in..." : "Sign in"}
+          {loginMutation.isPending ? t("auth.login.submitting") : t("auth.login.submit")}
         </button>
       </form>
     </AuthShell>

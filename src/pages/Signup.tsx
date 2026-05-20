@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AuthShell from "@/features/auth/components/AuthShell";
 import AuthTextField from "@/features/auth/components/AuthTextField";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 import { getDefaultRedirectPath } from "@/features/auth/lib/redirectByRole";
 
 const Signup = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { registerMutation } = useAuthSession();
   const [firstName, setFirstName] = useState("");
@@ -14,15 +16,28 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"CUSTOMER" | "PROVIDER">("CUSTOMER");
 
+  const roleOptions = [
+    {
+      value: "CUSTOMER" as const,
+      label: t("auth.signup.customer"),
+      description: t("auth.signup.customerDescription"),
+    },
+    {
+      value: "PROVIDER" as const,
+      label: t("auth.signup.provider"),
+      description: t("auth.signup.providerDescription"),
+    },
+  ];
+
   return (
     <AuthShell
-      title="Create your Feelora account"
-      description="Join as a customer or provider without changing the product’s current experience-driven interface."
+      title={t("auth.signup.shellTitle")}
+      description={t("auth.signup.shellDescription")}
       footer={
         <span>
-          Already have an account?{" "}
+          {t("auth.signup.footerPrompt")}{" "}
           <Link to="/login" className="font-semibold text-primary hover:text-primary/80">
-            Sign in
+            {t("auth.signup.footerCta")}
           </Link>
         </span>
       }
@@ -41,62 +56,51 @@ const Signup = () => {
         }}
       >
         <div>
-          <h2 className="text-3xl font-bold text-foreground">Sign up</h2>
-          <p className="mt-2 text-muted-foreground">
-            Create an account to start booking or listing experiences.
-          </p>
+          <h2 className="text-3xl font-bold text-foreground">{t("auth.signup.title")}</h2>
+          <p className="mt-2 text-muted-foreground">{t("auth.signup.subtitle")}</p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2">
           <AuthTextField
-            label="First name"
+            label={t("auth.common.firstName")}
             value={firstName}
             onChange={setFirstName}
             autoComplete="given-name"
-            placeholder="Ava"
+            placeholder={t("auth.common.firstNamePlaceholder")}
           />
           <AuthTextField
-            label="Last name"
+            label={t("auth.common.lastName")}
             value={lastName}
             onChange={setLastName}
             autoComplete="family-name"
-            placeholder="Morgan"
+            placeholder={t("auth.common.lastNamePlaceholder")}
           />
         </div>
 
         <AuthTextField
-          label="Email"
+          label={t("auth.common.email")}
           type="email"
           value={email}
           onChange={setEmail}
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder={t("auth.common.emailPlaceholder")}
         />
 
         <AuthTextField
-          label="Password"
+          label={t("auth.common.password")}
           type="password"
           value={password}
           onChange={setPassword}
           autoComplete="new-password"
-          placeholder="Minimum 8 characters"
+          placeholder={t("auth.common.passwordPlaceholder")}
         />
 
         <div>
-          <span className="mb-2 block text-sm font-medium text-foreground">Account type</span>
+          <span className="mb-2 block text-sm font-medium text-foreground">
+            {t("auth.signup.accountType")}
+          </span>
           <div className="grid gap-3 md:grid-cols-2">
-            {[
-              {
-                value: "CUSTOMER" as const,
-                label: "Customer",
-                description: "Book and manage experiences.",
-              },
-              {
-                value: "PROVIDER" as const,
-                label: "Provider",
-                description: "Offer services and manage bookings.",
-              },
-            ].map((option) => (
+            {roleOptions.map((option) => (
               <button
                 key={option.value}
                 type="button"
@@ -124,7 +128,7 @@ const Signup = () => {
           <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {registerMutation.error instanceof Error
               ? registerMutation.error.message
-              : "Unable to create the account right now."}
+              : t("auth.signup.errorFallback")}
           </div>
         ) : null}
 
@@ -133,7 +137,7 @@ const Signup = () => {
           disabled={registerMutation.isPending}
           className="w-full rounded-2xl bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {registerMutation.isPending ? "Creating account..." : "Create account"}
+          {registerMutation.isPending ? t("auth.signup.submitting") : t("auth.signup.submit")}
         </button>
       </form>
     </AuthShell>

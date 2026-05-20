@@ -1,17 +1,18 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Send, Sparkles } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 
-const suggestedPrompts = [
-    "I feel bored",
-    "Plan my weekend",
-    "I want something exciting",
-];
-
 const HeroSection = () => {
+    const { t } = useTranslation();
     const [query, setQuery] = useState("");
     const [imageLoaded, setImageLoaded] = useState(false);
+    const suggestedPrompts = [
+        { key: "bored", label: t("home.hero.suggestions.bored") },
+        { key: "weekend", label: t("home.hero.suggestions.weekend") },
+        { key: "exciting", label: t("home.hero.suggestions.exciting") },
+    ];
 
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -22,7 +23,7 @@ const HeroSection = () => {
                 )}
                 <motion.img
                     src={heroBg}
-                    alt="St. Basil's Cathedral at sunset, Moscow Red Square"
+                    alt={t("home.hero.heroAlt")}
                     width={1920}
                     height={1080}
                     onLoad={() => setImageLoaded(true)}
@@ -51,8 +52,8 @@ const HeroSection = () => {
                         transition={{ duration: 0.8, delay: 0.5 }}
                         className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground mb-6 leading-tight"
                     >
-                        Your life, full of{" "}
-                        <span className="gradient-text">emotions</span>
+                        {t("home.hero.titleStart")}{" "}
+                        <span className="gradient-text">{t("home.hero.titleHighlight")}</span>
                     </motion.h1>
 
                     <motion.p
@@ -61,7 +62,7 @@ const HeroSection = () => {
                         transition={{ duration: 0.8, delay: 0.7 }}
                         className="text-primary-foreground/70 text-lg md:text-xl mb-10 max-w-xl mx-auto"
                     >
-                        Discover experiences that make you feel alive. Let our AI guide you to your next moment of joy.
+                        {t("home.hero.subtitle")}
                     </motion.p>
 
                     {/* AI Chatbox */}
@@ -74,7 +75,7 @@ const HeroSection = () => {
                         <div className="flex items-center gap-2 mb-4">
                             <Sparkles className="w-5 h-5 text-primary" />
                             <span className="text-primary-foreground/80 text-sm font-medium">
-                                AI Experience Assistant
+                                {t("home.hero.assistantLabel")}
                             </span>
                         </div>
 
@@ -83,10 +84,13 @@ const HeroSection = () => {
                                 type="text"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                placeholder="How do you want to feel today?"
+                                placeholder={t("home.hero.inputPlaceholder")}
                                 className="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-primary-foreground placeholder:text-primary-foreground/40 focus:outline-none focus:border-primary/50 transition-colors"
                             />
-                            <button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-5 py-3 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                            <button
+                                aria-label={t("home.hero.send")}
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-5 py-3 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                            >
                                 <Send className="w-5 h-5" />
                             </button>
                         </div>
@@ -95,11 +99,11 @@ const HeroSection = () => {
                         <div className="flex flex-wrap gap-2 mt-4">
                             {suggestedPrompts.map((prompt) => (
                                 <button
-                                    key={prompt}
-                                    onClick={() => setQuery(prompt)}
+                                    key={prompt.key}
+                                    onClick={() => setQuery(prompt.label)}
                                     className="text-sm px-4 py-2 rounded-full bg-white/10 text-primary-foreground/70 hover:bg-white/20 hover:text-primary-foreground transition-all duration-300 border border-white/10"
                                 >
-                                    {prompt}
+                                    {prompt.label}
                                 </button>
                             ))}
                         </div>

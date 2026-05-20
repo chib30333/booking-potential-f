@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import AuthShell from "@/features/auth/components/AuthShell";
 import AuthTextField from "@/features/auth/components/AuthTextField";
 import { resetPassword } from "@/shared/api/auth";
 
 const ResetPassword = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = useMemo(() => searchParams.get("token") ?? "", [searchParams]);
@@ -17,13 +19,13 @@ const ResetPassword = () => {
 
   return (
     <AuthShell
-      title="Choose a new password"
-      description="Set a fresh password for your account using the secure reset token from your email."
+      title={t("auth.reset.shellTitle")}
+      description={t("auth.reset.shellDescription")}
       footer={
         <span>
-          Need a new link?{" "}
+          {t("auth.reset.footerPrompt")}{" "}
           <Link to="/forgot-password" className="font-semibold text-primary hover:text-primary/80">
-            Request another reset email
+            {t("auth.reset.footerCta")}
           </Link>
         </span>
       }
@@ -43,39 +45,37 @@ const ResetPassword = () => {
         }}
       >
         <div>
-          <h2 className="text-3xl font-bold text-foreground">Reset password</h2>
-          <p className="mt-2 text-muted-foreground">
-            Enter your new password below.
-          </p>
+          <h2 className="text-3xl font-bold text-foreground">{t("auth.reset.title")}</h2>
+          <p className="mt-2 text-muted-foreground">{t("auth.reset.subtitle")}</p>
         </div>
 
         {!token ? (
           <div className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            This reset link is missing its token. Request a new password reset email.
+            {t("auth.reset.missingToken")}
           </div>
         ) : null}
 
         <AuthTextField
-          label="New password"
+          label={t("auth.common.newPassword")}
           type="password"
           value={password}
           onChange={setPassword}
           autoComplete="new-password"
-          placeholder="Minimum 8 characters"
+          placeholder={t("auth.common.passwordPlaceholder")}
         />
 
         <AuthTextField
-          label="Confirm password"
+          label={t("auth.common.confirmPassword")}
           type="password"
           value={confirmPassword}
           onChange={setConfirmPassword}
           autoComplete="new-password"
-          placeholder="Re-enter your password"
+          placeholder={t("auth.common.confirmPlaceholder")}
         />
 
         {mutation.isSuccess ? (
           <div className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            {mutation.data.message} Redirecting to login...
+            {mutation.data.message} {t("auth.reset.successSuffix")}
           </div>
         ) : null}
 
@@ -83,7 +83,7 @@ const ResetPassword = () => {
           <div className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {mutation.error instanceof Error
               ? mutation.error.message
-              : "Unable to reset the password right now."}
+              : t("auth.reset.errorFallback")}
           </div>
         ) : null}
 
@@ -92,7 +92,7 @@ const ResetPassword = () => {
           disabled={mutation.isPending || !token}
           className="w-full rounded-2xl bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {mutation.isPending ? "Resetting password..." : "Reset password"}
+          {mutation.isPending ? t("auth.reset.submitting") : t("auth.reset.submit")}
         </button>
       </form>
     </AuthShell>
