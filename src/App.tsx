@@ -10,6 +10,7 @@ import JoyMap from "./pages/JoyMap.tsx";
 import ProviderDashboard from "./pages/ProviderDashboard.tsx";
 import AdminDashboard from "./pages/AdminDashboard.tsx";
 import Calendar from "./pages/Calendar.tsx";
+import PaymentSuccess from "./pages/PaymentSuccess.tsx";
 import Profile from "./pages/Profile.tsx";
 import Corporate from "./pages/Corporate.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -67,6 +68,14 @@ const App = () => (
             element={
               <RequireAuth>
                 <Calendar />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/payments/success"
+            element={
+              <RequireAuth>
+                <PaymentSuccess />
               </RequireAuth>
             }
           />

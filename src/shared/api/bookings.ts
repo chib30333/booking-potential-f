@@ -5,6 +5,13 @@ export function listMyBookings() {
   return request<{ bookings: BookingResponseDto[] }>("/bookings/me", { auth: true });
 }
 
+export function getMyBookingById(bookingId: string) {
+  return request<{ booking: BookingResponseDto }>(
+    `/bookings/${encodeURIComponent(bookingId)}`,
+    { auth: true }
+  );
+}
+
 export function listProviderBookings() {
   return request<{ bookings: BookingResponseDto[] }>("/provider/bookings", { auth: true });
 }
