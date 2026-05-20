@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Bell,
@@ -17,24 +18,7 @@ import { getMe } from "@/shared/api/auth";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 import { getStoredAccessToken } from "@/shared/lib/auth";
 import { cn } from "@/lib/utils";
-
-const navItems = [
-  { path: "/", label: "Home" },
-  { path: "/corporate", label: "Corporate" },
-  { path: "/explore", label: "Explore" },
-  { path: "/calendar", label: "Calendar" },
-];
-
-const accountLinks = [
-  { label: "Account", path: "/profile", icon: User },
-  { label: "Billing", path: "/billing", icon: CreditCard },
-  { label: "Settings", path: "/settings", icon: Settings },
-];
-
-const notifications = [
-  "Your Explore shortlist has 3 new matches.",
-  "Calendar reminder: pottery class tomorrow at 11:00.",
-];
+import LanguageSwitch from "@/components/LanguageSwitch";
 
 function buildDisplayName(user?: {
   fullName: string | null;
@@ -60,6 +44,7 @@ function buildInitials(name: string) {
 
 const Navbar = () => {
   const location = useLocation();
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -75,7 +60,27 @@ const Navbar = () => {
   const displayName = buildDisplayName(meQuery.data);
   const initials = buildInitials(displayName);
   const accountSubtitle =
-    meQuery.data?.role === "PROVIDER" ? "Provider account" : "Member account";
+    meQuery.data?.role === "PROVIDER"
+      ? t("nav.providerAccount")
+      : t("nav.memberAccount");
+
+  const navItems = [
+    { path: "/", label: t("nav.home") },
+    { path: "/corporate", label: t("nav.corporate") },
+    { path: "/explore", label: t("nav.explore") },
+    { path: "/calendar", label: t("nav.calendar") },
+  ];
+
+  const accountLinks = [
+    { label: t("nav.account"), path: "/profile", icon: User },
+    { label: t("nav.billing"), path: "/billing", icon: CreditCard },
+    { label: t("nav.settings"), path: "/settings", icon: Settings },
+  ];
+
+  const notifications = [
+    "Your Explore shortlist has 3 new matches.",
+    "Calendar reminder: pottery class tomorrow at 11:00.",
+  ];
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 18);
@@ -147,12 +152,13 @@ const Navbar = () => {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
+          <LanguageSwitch />
           {isAuthenticated ? (
             <>
               <button
                 type="button"
                 className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white/80 text-slate-700 transition-colors hover:bg-slate-50"
-                aria-label="Notifications"
+                aria-label={t("nav.notifications")}
               >
                 <Bell className="h-4.5 w-4.5" />
                 <span className="absolute right-3 top-3 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-4 ring-white/90" />
@@ -163,7 +169,7 @@ const Navbar = () => {
                   type="button"
                   onClick={() => setIsAccountOpen((open) => !open)}
                   className="flex items-center gap-3 rounded-[20px] border border-slate-200 bg-white/88 px-3 py-2 transition-colors hover:bg-white"
-                  aria-label="Account menu"
+                  aria-label={t("nav.account")}
                 >
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-fuchsia-500 via-pink-500 to-orange-400 text-sm font-semibold text-white shadow-[0_12px_26px_rgba(244,114,182,0.35)]">
                     {initials}
@@ -192,16 +198,16 @@ const Navbar = () => {
                       className="absolute right-0 top-[calc(100%+0.75rem)] w-80 overflow-hidden rounded-[28px] border border-white/80 bg-white/96 p-3 shadow-[0_26px_80px_rgba(15,23,42,0.18)] backdrop-blur-2xl"
                     >
                       <div className="rounded-3xl bg-linear-to-br from-slate-900 via-slate-800 to-slate-700 p-4 text-white">
-                        <p className="text-sm text-white/60">Signed in as</p>
+                        <p className="text-sm text-white/60">{t("nav.signedInAs")}</p>
                         <p className="mt-1 text-lg font-semibold">{displayName}</p>
                         <p className="mt-2 text-sm leading-6 text-white/72">
-                          Manage your profile, upcoming plans, and premium perks.
+                          {t("nav.accountSubtitle")}
                         </p>
                       </div>
 
                       <div className="mt-3 rounded-3xl bg-slate-50 p-3">
                         <p className="mb-2 text-xs font-semibold tracking-[0.2em] text-slate-400 uppercase">
-                          Latest Updates
+                          {t("nav.latestUpdates")}
                         </p>
                         <div className="space-y-2">
                           {notifications.map((item) => (
@@ -245,7 +251,7 @@ const Navbar = () => {
                         className="mt-2 flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-50"
                       >
                         <LogOut className="h-4 w-4" />
-                        Sign out
+                        {t("nav.signOut")}
                       </button>
                     </motion.div>
                   )}
@@ -258,13 +264,13 @@ const Navbar = () => {
                 to="/login"
                 className="rounded-[20px] border border-slate-200 bg-white/88 px-5 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-white hover:text-slate-900"
               >
-                Login
+                {t("nav.login")}
               </Link>
               <Link
                 to="/signup"
                 className="rounded-[20px] bg-slate-900 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-slate-800"
               >
-                Sign up
+                {t("nav.signup")}
               </Link>
             </>
           )}
@@ -274,7 +280,7 @@ const Navbar = () => {
           type="button"
           onClick={() => setIsMenuOpen((open) => !open)}
           className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white/85 text-slate-700 transition-colors hover:bg-slate-50 md:hidden"
-          aria-label="Toggle menu"
+          aria-label={t("nav.menu")}
         >
           {isMenuOpen ? (
             <X className="h-5 w-5" />
@@ -313,17 +319,21 @@ const Navbar = () => {
                     onClick={() => setIsMenuOpen(false)}
                     className="rounded-2xl bg-white px-4 py-3 text-center text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100"
                   >
-                    Login
+                    {t("nav.login")}
                   </Link>
                   <Link
                     to="/signup"
                     onClick={() => setIsMenuOpen(false)}
                     className="rounded-2xl bg-slate-900 px-4 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-slate-800"
                   >
-                    Sign up
+                    {t("nav.signup")}
                   </Link>
                 </div>
               )}
+
+              <div className="mb-4 flex justify-end">
+                <LanguageSwitch />
+              </div>
 
               <div className="space-y-2">
                 {navItems.map((item) => {
@@ -358,7 +368,7 @@ const Navbar = () => {
                   className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600 transition-colors hover:bg-rose-100"
                 >
                   <LogOut className="h-4 w-4" />
-                  Sign out
+                  {t("nav.signOut")}
                 </button>
               ) : null}
             </div>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Star, Heart } from "lucide-react";
 import LazyImage from "@/components/LazyImage";
@@ -26,6 +27,7 @@ const moodColors: Record<string, string> = {
 };
 
 const FeaturedExperiences = () => {
+    const { t } = useTranslation();
     return (
         <section className="py-24 bg-background">
             <div className="container mx-auto px-6">
@@ -37,10 +39,10 @@ const FeaturedExperiences = () => {
                     className="text-center mb-16"
                 >
                     <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
-                        Featured <span className="gradient-text">Experiences</span>
+                        {t("home.featured.titleStart")} <span className="gradient-text">{t("home.featured.titleHighlight")}</span>
                     </h2>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                        Handpicked moments designed to spark joy and create lasting memories
+                        {t("home.featured.subtitle")}
                     </p>
                 </motion.div>
 
@@ -64,7 +66,10 @@ const FeaturedExperiences = () => {
                                     height={768}
                                 />
                                 <div className="absolute top-4 right-4">
-                                    <button className="p-2 rounded-full glass transition-all duration-300 hover:bg-primary/30">
+                                    <button
+                                        aria-label={t("home.featured.favorite")}
+                                        className="p-2 rounded-full glass transition-all duration-300 hover:bg-primary/30"
+                                    >
                                         <Heart className="w-4 h-4 text-primary-foreground" />
                                     </button>
                                 </div>
