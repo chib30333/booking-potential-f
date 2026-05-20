@@ -6,6 +6,10 @@ export interface CalendarEvent {
   mood: "relaxing" | "exciting" | "social" | "adventure" | "creative";
   location: string;
   description: string;
+  bookingId?: string;
+  status?: string;
+  qrCodeValue?: string | null;
+  startsAt?: string;
 }
 
 export const fallbackCalendarEvents: CalendarEvent[] = [

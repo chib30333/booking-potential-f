@@ -64,9 +64,9 @@ function mapCustomerStats(bookings: BookingResponseDto[]) {
   ];
 }
 
-function mapEmotionStats(profile?: CustomerProfileDto) {
+function mapEmotionStats(profile?: CustomerProfileDto, hasToken = false) {
   if (!profile?.emotionPreferences.length) {
-    return fallbackEmotionStats;
+    return hasToken ? [] : fallbackEmotionStats;
   }
 
   const total = profile.emotionPreferences.reduce((sum, item) => sum + item.score, 0) || 1;
@@ -80,9 +80,9 @@ function mapEmotionStats(profile?: CustomerProfileDto) {
   });
 }
 
-function mapRecentBookings(bookings: BookingResponseDto[]) {
+function mapRecentBookings(bookings: BookingResponseDto[], hasToken = false) {
   if (!bookings.length) {
-    return fallbackRecentBookings;
+    return hasToken ? [] : fallbackRecentBookings;
   }
 
   return bookings.slice(0, 3).map((booking) => ({
@@ -148,8 +148,8 @@ export function useProfileDashboard() {
   const isProviderAccount = user?.role === "PROVIDER";
   const displayName = buildDisplayName(user);
 
-  const customerStats = customerBookingsQuery.data?.bookings.length
-    ? mapCustomerStats(customerBookingsQuery.data.bookings)
+  const customerStats = token
+    ? mapCustomerStats(customerBookingsQuery.data?.bookings ?? [])
     : fallbackCustomerStats.map((item) => ({
         ...item,
         icon: iconMap[item.iconKey as keyof typeof iconMap],
@@ -196,8 +196,11 @@ export function useProfileDashboard() {
     initials: buildInitials(displayName),
     customerStats,
     providerStats,
-    emotionStats: mapEmotionStats(customerProfileQuery.data),
-    recentBookings: mapRecentBookings(customerBookingsQuery.data?.bookings ?? []),
+    emotionStats: mapEmotionStats(customerProfileQuery.data, Boolean(token)),
+    recentBookings: mapRecentBookings(
+      customerBookingsQuery.data?.bookings ?? [],
+      Boolean(token)
+    ),
     providerBrandName: providerProfileQuery.data?.brandName ?? displayName,
     joinedLabel: user?.createdAt
       ? `Emotion explorer since ${new Date(user.createdAt).getFullYear()}`

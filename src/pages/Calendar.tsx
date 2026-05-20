@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Clock, MapPin, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, MapPin, QrCode, X } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import PageHeader from "@/components/shared/PageHeader";
 import { useCalendarEvents } from "@/features/calendar/hooks/useCalendarEvents";
 import type { CalendarEvent } from "@/features/calendar/data/fallbackCalendarEvents";
+import { cancelBooking } from "@/shared/api/bookings";
 
 const moodConfig: Record<string, { bg: string; border: string; dot: string; label: string }> = {
     relaxing: { bg: "bg-secondary/10", border: "border-secondary/30", dot: "bg-secondary", label: "Relaxing" },
@@ -19,6 +22,29 @@ const Calendar = () => {
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
     const [view, setView] = useState<"month" | "timeline">("timeline");
     const { events, isLoading, isEmpty, isError } = useCalendarEvents();
+    const queryClient = useQueryClient();
+
+    const cancelMutation = useMutation({
+        mutationFn: (bookingId: string) => cancelBooking(bookingId),
+        onSuccess: (data) => {
+            toast.success(
+                data.refundEligible
+                    ? "Бронирование отменено. Возврат будет обработан в течение 5 дней."
+                    : "Бронирование отменено."
+            );
+            void queryClient.invalidateQueries({ queryKey: ["my-bookings-calendar"] });
+            void queryClient.invalidateQueries({ queryKey: ["profile-customer-bookings"] });
+            setSelectedEvent(null);
+        },
+        onError: (e) =>
+            toast.error(e instanceof Error ? e.message : "Не удалось отменить бронирование"),
+    });
+
+    const isCancellable = (event: CalendarEvent | null) => {
+        if (!event?.bookingId || !event.startsAt) return false;
+        if (event.status === "CANCELLED" || event.status === "COMPLETED") return false;
+        return new Date(event.startsAt).getTime() > Date.now();
+    };
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -223,10 +249,43 @@ const Calendar = () => {
                             <div className="space-y-2 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-2"><Clock className="w-4 h-4" />{selectedEvent.time}</div>
                                 <div className="flex items-center gap-2"><MapPin className="w-4 h-4" />{selectedEvent.location}</div>
+                                {selectedEvent.status ? (
+                                    <div className="flex items-center gap-2">
+                                        <span className="inline-block px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                                            {selectedEvent.status}
+                                        </span>
+                                    </div>
+                                ) : null}
                             </div>
-                            <button className="mt-6 w-full py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors">
-                                View Details
-                            </button>
+                            {selectedEvent.qrCodeValue ? (
+                                <div className="mt-6 rounded-2xl border border-border bg-background/60 p-4">
+                                    <div className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
+                                        <QrCode className="w-4 h-4" /> QR-код для входа
+                                    </div>
+                                    <img
+                                        alt="Booking QR code"
+                                        className="mx-auto"
+                                        src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(selectedEvent.qrCodeValue)}`}
+                                    />
+                                    <p className="mt-2 text-center text-xs text-muted-foreground break-all">
+                                        {selectedEvent.qrCodeValue}
+                                    </p>
+                                </div>
+                            ) : null}
+                            <div className="mt-6 flex gap-2">
+                                {isCancellable(selectedEvent) ? (
+                                    <button
+                                        onClick={() => cancelMutation.mutate(selectedEvent.bookingId!)}
+                                        disabled={cancelMutation.isPending}
+                                        className="flex-1 py-3 rounded-xl border border-border font-semibold hover:bg-muted disabled:opacity-60"
+                                    >
+                                        {cancelMutation.isPending ? "Отмена..." : "Отменить"}
+                                    </button>
+                                ) : null}
+                                <button className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors">
+                                    Подробнее
+                                </button>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

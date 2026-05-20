@@ -13,6 +13,24 @@ export function getProviderProfile() {
   }).then((response) => response.data);
 }
 
+export interface UpdateProviderProfilePayload {
+  brandName?: string;
+  bio?: string;
+  cityId?: string;
+  addressLine?: string;
+  websiteUrl?: string;
+  instagramUrl?: string;
+  includeInJoyMap?: boolean;
+}
+
+export function updateProviderProfile(payload: UpdateProviderProfilePayload) {
+  return request<{ success: true; data: ProviderProfileDto }>("/providers/me", {
+    method: "PATCH",
+    auth: true,
+    body: JSON.stringify(payload),
+  }).then((response) => response.data);
+}
+
 export interface OnboardingPayload {
   age: number;
   cityId: string;
