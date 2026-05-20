@@ -34,6 +34,13 @@ export function getMyActiveSubscription() {
   ).then((r) => r.data);
 }
 
+export function listMySubscriptions() {
+  return request<{ success: boolean; data: ActiveSubscriptionDto[] }>(
+    "/subscriptions/me",
+    { auth: true }
+  ).then((r) => r.data);
+}
+
 export function cancelMySubscription(immediate = false) {
   return request<{ success: boolean; data: ActiveSubscriptionDto }>(
     "/subscriptions/me/cancel",

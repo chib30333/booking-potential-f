@@ -27,8 +27,8 @@ const navItems = [
 
 const accountLinks = [
   { label: "Account", path: "/profile", icon: User },
-  { label: "Billing", path: "/", icon: CreditCard },
-  { label: "Settings", path: "/", icon: Settings },
+  { label: "Billing", path: "/billing", icon: CreditCard },
+  { label: "Settings", path: "/settings", icon: Settings },
 ];
 
 const notifications = [

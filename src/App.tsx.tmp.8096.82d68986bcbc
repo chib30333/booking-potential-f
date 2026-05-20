@@ -89,22 +89,6 @@ const App = () => (
               </RequireAuth>
             }
           />
-          <Route
-            path="/billing"
-            element={
-              <RequireAuth>
-                <Billing />
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/settings"
-            element={
-              <RequireAuth>
-                <Settings />
-              </RequireAuth>
-            }
-          />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />

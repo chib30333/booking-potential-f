@@ -48,6 +48,33 @@ export async function resetPassword(input: {
   });
 }
 
+export interface UpdateMePayload {
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  avatarUrl?: string | null;
+}
+
+export async function updateMe(input: UpdateMePayload) {
+  return request<{ user: SafeUser }>("/auth/me", {
+    method: "PATCH",
+    auth: true,
+    body: JSON.stringify(input),
+  }).then((r) => r.user);
+}
+
+export async function changePassword(input: {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}) {
+  return request<{ message: string }>("/auth/change-password", {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify(input),
+  });
+}
+
 export async function logout() {
   return request<{ message: string }>("/auth/logout", {
     method: "POST",
