@@ -39,6 +39,24 @@ export interface OnboardingPayload {
   emotionPreferences: Array<{ emotion: string; score: number }>;
 }
 
+export interface UpdateCustomerProfilePayload {
+  age?: number;
+  cityId?: string;
+  moodNotes?: string;
+  preferredRadiusKm?: number;
+}
+
+export function updateCustomerProfile(input: UpdateCustomerProfilePayload) {
+  return request<{ success: true; data: CustomerProfileDto }>(
+    "/customer-profile/me",
+    {
+      method: "PATCH",
+      auth: true,
+      body: JSON.stringify(input),
+    }
+  ).then((response) => response.data);
+}
+
 export function submitCustomerOnboarding(input: OnboardingPayload) {
   return request<{ success: true; data: CustomerProfileDto }>(
     "/customer-profile/onboarding",
