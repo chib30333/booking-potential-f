@@ -262,7 +262,7 @@ const Navbar = () => {
             <>
               <Link
                 to="/login"
-                className="rounded-[20px] border border-slate-200 bg-white/88 px-5 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-white hover:text-slate-900"
+                className="rounded-[20px] border border-slate-200 bg-white/88 px-5 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-white hover:text-slate-900"
               >
                 {t("nav.login")}
               </Link>

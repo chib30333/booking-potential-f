@@ -35,7 +35,7 @@ const LanguageSwitch = ({ className, variant = "pill" }: LanguageSwitchProps) =>
             type="button"
             onClick={() => setLocale(lng)}
             className={cn(
-              "rounded-full px-2.5 py-1 text-xs font-semibold transition-colors",
+              "rounded-full px-2.5 py-2 text-xs font-semibold transition-colors",
               active
                 ? "bg-slate-900 text-white"
                 : "text-slate-500 hover:text-slate-900",
