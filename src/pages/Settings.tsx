@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { KeyRound, LogOut, User as UserIcon, Heart, MapPin } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -15,6 +16,7 @@ import { getReferenceData } from "@/shared/api/reference-data";
 import { useAuthSession } from "@/features/auth/hooks/useAuthSession";
 
 const Settings = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { logoutMutation } = useAuthSession();
 
@@ -67,10 +69,10 @@ const Settings = () => {
         avatarUrl: accountForm.avatarUrl.trim() || null,
       }),
     onSuccess: () => {
-      toast.success("Профиль обновлён");
+      toast.success(t("settings.profileUpdated"));
       void queryClient.invalidateQueries({ queryKey: ["auth-me"] });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Ошибка"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("common.error")),
   });
 
   // ---- password form ----
@@ -78,11 +80,11 @@ const Settings = () => {
   const changePwd = useMutation({
     mutationFn: () => changePassword(pwd),
     onSuccess: () => {
-      toast.success("Пароль обновлён. Войдите заново со старого устройства.");
+      toast.success(t("settings.passwordUpdated"));
       setPwd({ currentPassword: "", newPassword: "", confirmPassword: "" });
     },
     onError: (e) =>
-      toast.error(e instanceof Error ? e.message : "Не удалось обновить пароль"),
+      toast.error(e instanceof Error ? e.message : t("settings.passwordUpdateFailed")),
   });
 
   // ---- customer preferences ----
@@ -117,10 +119,10 @@ const Settings = () => {
             : Number(customerForm.preferredRadiusKm),
       }),
     onSuccess: () => {
-      toast.success("Предпочтения сохранены");
+      toast.success(t("settings.preferencesSaved"));
       void queryClient.invalidateQueries({ queryKey: ["customer-profile"] });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Ошибка"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("common.error")),
   });
 
   // ---- provider preferences ----
@@ -158,10 +160,10 @@ const Settings = () => {
         instagramUrl: providerForm.instagramUrl || undefined,
       }),
     onSuccess: () => {
-      toast.success("Профиль провайдера обновлён");
+      toast.success(t("settings.providerProfileUpdated"));
       void queryClient.invalidateQueries({ queryKey: ["provider-profile"] });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Ошибка"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("common.error")),
   });
 
   const cities = referenceData.data?.cities ?? [];
@@ -172,18 +174,18 @@ const Settings = () => {
       <div className="container mx-auto px-6 pt-24 pb-12 max-w-3xl">
         <PageHeader
           className="mb-8"
-          title={<>Настройки</>}
-          description="Управляйте профилем, безопасностью и предпочтениями"
+          title={<>{t("settings.title")}</>}
+          description={t("settings.subtitle")}
         />
 
         {/* Account */}
         <section className="glass-card p-6 mb-6">
           <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-            <UserIcon className="w-5 h-5 text-primary" /> Аккаунт
+            <UserIcon className="w-5 h-5 text-primary" /> {t("settings.account")}
           </h2>
           <div className="grid gap-3 md:grid-cols-2">
             <label className="text-sm">
-              Имя
+              {t("settings.firstName")}
               <input
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
                 value={accountForm.firstName}
@@ -191,7 +193,7 @@ const Settings = () => {
               />
             </label>
             <label className="text-sm">
-              Фамилия
+              {t("settings.lastName")}
               <input
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
                 value={accountForm.lastName}
@@ -199,7 +201,7 @@ const Settings = () => {
               />
             </label>
             <label className="text-sm">
-              Email
+              {t("settings.email")}
               <input
                 disabled
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-muted-foreground"
@@ -207,7 +209,7 @@ const Settings = () => {
               />
             </label>
             <label className="text-sm">
-              Телефон
+              {t("settings.phone")}
               <input
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
                 placeholder="+7..."
@@ -216,7 +218,7 @@ const Settings = () => {
               />
             </label>
             <label className="text-sm md:col-span-2">
-              Аватар (URL)
+              {t("settings.avatarUrl")}
               <input
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
                 placeholder="https://..."
@@ -230,24 +232,24 @@ const Settings = () => {
             disabled={saveAccount.isPending}
             className="mt-4 rounded-full bg-slate-900 px-5 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
           >
-            {saveAccount.isPending ? "Сохранение..." : "Сохранить"}
+            {saveAccount.isPending ? t("common.saving") : t("common.save")}
           </button>
         </section>
 
         {/* Password */}
         <section className="glass-card p-6 mb-6">
           <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-            <KeyRound className="w-5 h-5 text-primary" /> Пароль
+            <KeyRound className="w-5 h-5 text-primary" /> {t("settings.password")}
           </h2>
           {meQuery.data?.authProvider === "GOOGLE" ? (
             <p className="text-sm text-muted-foreground">
-              Аккаунт привязан к Google. Сменить пароль можно только через восстановление.
+              {t("settings.passwordGoogleNote")}
             </p>
           ) : (
             <>
               <div className="grid gap-3 md:grid-cols-3">
                 <label className="text-sm">
-                  Текущий пароль
+                  {t("settings.currentPassword")}
                   <input
                     type="password"
                     className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
@@ -256,7 +258,7 @@ const Settings = () => {
                   />
                 </label>
                 <label className="text-sm">
-                  Новый пароль
+                  {t("settings.newPassword")}
                   <input
                     type="password"
                     className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
@@ -265,7 +267,7 @@ const Settings = () => {
                   />
                 </label>
                 <label className="text-sm">
-                  Подтверждение
+                  {t("settings.confirmPassword")}
                   <input
                     type="password"
                     className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
@@ -277,11 +279,11 @@ const Settings = () => {
               <button
                 onClick={() => {
                   if (pwd.newPassword.length < 8) {
-                    toast.error("Минимум 8 символов");
+                    toast.error(t("settings.minLength"));
                     return;
                   }
                   if (pwd.newPassword !== pwd.confirmPassword) {
-                    toast.error("Пароли не совпадают");
+                    toast.error(t("settings.passwordsDoNotMatch"));
                     return;
                   }
                   changePwd.mutate();
@@ -289,7 +291,7 @@ const Settings = () => {
                 disabled={changePwd.isPending}
                 className="mt-4 rounded-full bg-slate-900 px-5 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
               >
-                {changePwd.isPending ? "Обновление..." : "Сменить пароль"}
+                {changePwd.isPending ? t("settings.updating") : t("settings.changePassword")}
               </button>
             </>
           )}
@@ -299,11 +301,11 @@ const Settings = () => {
         {isCustomer ? (
           <section className="glass-card p-6 mb-6">
             <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary" /> Предпочтения
+              <Heart className="w-5 h-5 text-primary" /> {t("settings.preferences")}
             </h2>
             <div className="grid gap-3 md:grid-cols-2">
               <label className="text-sm">
-                Возраст
+                {t("settings.age")}
                 <input
                   type="number"
                   min={13}
@@ -319,13 +321,13 @@ const Settings = () => {
                 />
               </label>
               <label className="text-sm">
-                Город
+                {t("settings.city")}
                 <select
                   className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
                   value={customerForm.cityId}
                   onChange={(e) => setCustomerForm({ ...customerForm, cityId: e.target.value })}
                 >
-                  <option value="">—</option>
+                  <option value="">{t("common.noneDash")}</option>
                   {cities.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -334,7 +336,7 @@ const Settings = () => {
                 </select>
               </label>
               <label className="text-sm">
-                Радиус, км
+                {t("settings.radiusKm")}
                 <input
                   type="number"
                   min={1}
@@ -350,7 +352,7 @@ const Settings = () => {
                 />
               </label>
               <label className="text-sm md:col-span-2">
-                Заметки о настроении
+                {t("settings.moodNotes")}
                 <textarea
                   rows={3}
                   className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
@@ -364,7 +366,7 @@ const Settings = () => {
               disabled={saveCustomerPrefs.isPending}
               className="mt-4 rounded-full bg-slate-900 px-5 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
             >
-              {saveCustomerPrefs.isPending ? "Сохранение..." : "Сохранить предпочтения"}
+              {saveCustomerPrefs.isPending ? t("common.saving") : t("settings.savePreferences")}
             </button>
           </section>
         ) : null}
@@ -373,11 +375,11 @@ const Settings = () => {
         {isProvider ? (
           <section className="glass-card p-6 mb-6">
             <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-primary" /> Профиль провайдера
+              <MapPin className="w-5 h-5 text-primary" /> {t("settings.providerProfile")}
             </h2>
             <div className="grid gap-3 md:grid-cols-2">
               <label className="text-sm">
-                Название бренда
+                {t("settings.brandName")}
                 <input
                   className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
                   value={providerForm.brandName}
@@ -385,13 +387,13 @@ const Settings = () => {
                 />
               </label>
               <label className="text-sm">
-                Город
+                {t("settings.city")}
                 <select
                   className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
                   value={providerForm.cityId}
                   onChange={(e) => setProviderForm({ ...providerForm, cityId: e.target.value })}
                 >
-                  <option value="">—</option>
+                  <option value="">{t("common.noneDash")}</option>
                   {cities.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
@@ -400,7 +402,7 @@ const Settings = () => {
                 </select>
               </label>
               <label className="text-sm md:col-span-2">
-                Адрес
+                {t("settings.address")}
                 <input
                   className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
                   value={providerForm.addressLine}
@@ -410,7 +412,7 @@ const Settings = () => {
                 />
               </label>
               <label className="text-sm">
-                Сайт
+                {t("settings.website")}
                 <input
                   className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
                   placeholder="https://..."
@@ -421,7 +423,7 @@ const Settings = () => {
                 />
               </label>
               <label className="text-sm">
-                Instagram
+                {t("settings.instagram")}
                 <input
                   className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
                   placeholder="https://..."
@@ -432,7 +434,7 @@ const Settings = () => {
                 />
               </label>
               <label className="text-sm md:col-span-2">
-                О бренде
+                {t("settings.aboutBrand")}
                 <textarea
                   rows={4}
                   className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm"
@@ -446,20 +448,20 @@ const Settings = () => {
               disabled={saveProviderPrefs.isPending}
               className="mt-4 rounded-full bg-slate-900 px-5 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
             >
-              {saveProviderPrefs.isPending ? "Сохранение..." : "Сохранить"}
+              {saveProviderPrefs.isPending ? t("common.saving") : t("common.save")}
             </button>
           </section>
         ) : null}
 
         {/* Danger zone */}
         <section className="glass-card p-6">
-          <h2 className="text-lg font-bold text-foreground mb-4">Сессия</h2>
+          <h2 className="text-lg font-bold text-foreground mb-4">{t("settings.session")}</h2>
           <button
             onClick={() => logoutMutation.mutate()}
             disabled={logoutMutation.isPending}
             className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100 disabled:opacity-60"
           >
-            <LogOut className="w-4 h-4" /> Выйти из аккаунта
+            <LogOut className="w-4 h-4" /> {t("settings.logout")}
           </button>
         </section>
       </div>
