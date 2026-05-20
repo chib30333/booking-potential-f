@@ -44,16 +44,15 @@ const paymentStatusBadge = (status: PaymentHistoryItem["status"]) => {
   return map[status] ?? "bg-slate-100 text-slate-600";
 };
 
-const Billing = () => {
-  const { t } = useTranslation();
-  const queryClient = useQueryClient();
+const paymentTitle = (p: PaymentHistoryItem) => {
+  if (p.type === "BOOKING") {
+    return p.booking?.slot?.service?.title ?? "Бронирование";
+  }
+  return p.subscription?.plan?.name ?? "Подписка";
+};
 
-  const paymentTitle = (p: PaymentHistoryItem) => {
-    if (p.type === "BOOKING") {
-      return p.booking?.slot?.service?.title ?? t("billing.booking");
-    }
-    return p.subscription?.plan?.name ?? t("billing.subscription");
-  };
+const Billing = () => {
+  const queryClient = useQueryClient();
 
   const activeSubQuery = useQuery({
     queryKey: ["my-subscription"],
@@ -77,14 +76,14 @@ const Billing = () => {
     onSuccess: (_, immediate) => {
       toast.success(
         immediate
-          ? t("billing.cancelledImmediately")
-          : t("billing.willCancelAtEnd")
+          ? "Подписка отменена немедленно"
+          : "Подписка будет отменена в конце оплаченного периода"
       );
       void queryClient.invalidateQueries({ queryKey: ["my-subscription"] });
       void queryClient.invalidateQueries({ queryKey: ["my-subscriptions-history"] });
     },
     onError: (e) =>
-      toast.error(e instanceof Error ? e.message : t("billing.cancelFailed")),
+      toast.error(e instanceof Error ? e.message : "Не удалось отменить подписку"),
   });
 
   const subscribe = useMutation({
@@ -94,11 +93,11 @@ const Billing = () => {
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
       } else {
-        toast.error(t("billing.checkoutUrlMissing"));
+        toast.error("Не получили checkout URL от провайдера");
       }
     },
     onError: (e) =>
-      toast.error(e instanceof Error ? e.message : t("billing.checkoutFailed")),
+      toast.error(e instanceof Error ? e.message : "Не удалось начать оформление"),
   });
 
   const sub = activeSubQuery.data;
@@ -114,8 +113,8 @@ const Billing = () => {
       <div className="container mx-auto px-6 pt-24 pb-12 max-w-5xl">
         <PageHeader
           className="mb-8"
-          title={<>{t("billing.title")}</>}
-          description={t("billing.subtitle")}
+          title={<>Биллинг и подписка</>}
+          description="Управление подпиской Joy Map и история платежей"
         />
 
         {/* Current subscription */}
@@ -123,28 +122,28 @@ const Billing = () => {
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-primary" /> {t("billing.joyMapSubscription")}
+                <Sparkles className="w-5 h-5 text-primary" /> Подписка Joy Map
               </h2>
               {activeSubQuery.isLoading ? (
-                <p className="text-sm text-muted-foreground mt-1">{t("common.loadingShort")}</p>
+                <p className="text-sm text-muted-foreground mt-1">Загрузка...</p>
               ) : subscriptionActive ? (
                 <div className="text-sm text-muted-foreground mt-1 space-y-1">
                   <p>
-                    {t("billing.statusLabel")}<span className="font-medium text-foreground">{sub?.status}</span>
+                    Статус: <span className="font-medium text-foreground">{sub?.status}</span>
                     {sub?.plan ? (
-                      <> · {formatMoney(sub.plan.priceAmount, sub.plan.currency)} {t("billing.perMonth")}</>
+                      <> · {formatMoney(sub.plan.priceAmount, sub.plan.currency)} / мес</>
                     ) : null}
                   </p>
                   {sub?.currentPeriodEnd ? (
                     <p>
-                      {t("billing.activeUntil")}{formatDate(sub.currentPeriodEnd)}
-                      {sub.cancelAtPeriodEnd ? ` ${t("billing.cancellingAtPeriodEnd")}` : ""}
+                      Активна до {formatDate(sub.currentPeriodEnd)}
+                      {sub.cancelAtPeriodEnd ? " · отменяется по окончании" : ""}
                     </p>
                   ) : null}
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground mt-1">
-                  {t("billing.noActive")}
+                  У вас нет активной подписки. Выберите план ниже.
                 </p>
               )}
             </div>
@@ -157,19 +156,19 @@ const Billing = () => {
                       disabled={cancelSub.isPending}
                       className="rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-muted disabled:opacity-60"
                     >
-                      {t("billing.cancelAtPeriodEnd")}
+                      Отменить в конце периода
                     </button>
                   ) : null}
                   <button
                     onClick={() => {
-                      if (confirm(t("billing.cancelImmediatelyConfirm"))) {
+                      if (confirm("Отменить подписку немедленно? Доступ к Карте радости пропадёт сразу.")) {
                         cancelSub.mutate(true);
                       }
                     }}
                     disabled={cancelSub.isPending}
                     className="rounded-full bg-rose-50 px-4 py-2 text-sm font-medium text-rose-700 hover:bg-rose-100 disabled:opacity-60"
                   >
-                    {t("billing.cancelNow")}
+                    Отменить сейчас
                   </button>
                 </>
               ) : null}
@@ -177,7 +176,7 @@ const Billing = () => {
                 to="/joy-map"
                 className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
               >
-                {t("billing.openMap")}
+                Открыть карту
               </Link>
             </div>
           </div>
@@ -186,12 +185,12 @@ const Billing = () => {
         {/* Plans */}
         {!subscriptionActive ? (
           <section className="glass-card p-6 mb-8">
-            <h2 className="text-lg font-bold text-foreground mb-4">{t("billing.availablePlans")}</h2>
+            <h2 className="text-lg font-bold text-foreground mb-4">Доступные планы</h2>
             {plansQuery.isLoading ? (
-              <p className="text-sm text-muted-foreground">{t("billing.loadingPlans")}</p>
+              <p className="text-sm text-muted-foreground">Загрузка планов...</p>
             ) : plans.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                {t("billing.noPlans")}
+                Планы пока не настроены. Свяжитесь с поддержкой.
               </p>
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
@@ -211,7 +210,7 @@ const Billing = () => {
                       {formatMoney(plan.priceAmount, plan.currency)}
                       <span className="text-sm font-normal text-muted-foreground">
                         {" "}
-                        / {plan.intervalMonths === 1 ? t("billing.monthShort") : `${plan.intervalMonths} ${t("billing.monthShort")}`}
+                        / {plan.intervalMonths === 1 ? "мес" : `${plan.intervalMonths} мес`}
                       </span>
                     </p>
                     <div className="mt-4 flex flex-wrap gap-2">
@@ -222,7 +221,7 @@ const Billing = () => {
                         disabled={subscribe.isPending}
                         className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
                       >
-                        <CreditCard className="w-4 h-4" /> {t("billing.payWithStripe")}
+                        <CreditCard className="w-4 h-4" /> Оплатить картой (Stripe)
                       </button>
                       <button
                         onClick={() =>
@@ -231,7 +230,7 @@ const Billing = () => {
                         disabled={subscribe.isPending}
                         className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50 disabled:opacity-60"
                       >
-                        {t("billing.payWithYookassa")}
+                        ЮKassa
                       </button>
                     </div>
                   </div>
@@ -245,24 +244,24 @@ const Billing = () => {
         <section className="glass-card p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <ReceiptText className="w-5 h-5 text-primary" /> {t("billing.paymentHistory")}
+              <ReceiptText className="w-5 h-5 text-primary" /> История платежей
             </h2>
           </div>
           {paymentsQuery.isLoading ? (
-            <p className="text-sm text-muted-foreground">{t("common.loadingShort")}</p>
+            <p className="text-sm text-muted-foreground">Загрузка...</p>
           ) : payments.length === 0 ? (
-            <p className="text-sm text-muted-foreground">{t("billing.noPayments")}</p>
+            <p className="text-sm text-muted-foreground">Платежей ещё не было.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                    <th className="py-2 pr-3">{t("billing.table.date")}</th>
-                    <th className="py-2 pr-3">{t("billing.table.description")}</th>
-                    <th className="py-2 pr-3">{t("billing.table.type")}</th>
-                    <th className="py-2 pr-3">{t("billing.table.method")}</th>
-                    <th className="py-2 pr-3">{t("billing.table.amount")}</th>
-                    <th className="py-2 pr-3">{t("billing.table.status")}</th>
+                    <th className="py-2 pr-3">Дата</th>
+                    <th className="py-2 pr-3">Описание</th>
+                    <th className="py-2 pr-3">Тип</th>
+                    <th className="py-2 pr-3">Способ</th>
+                    <th className="py-2 pr-3">Сумма</th>
+                    <th className="py-2 pr-3">Статус</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -273,7 +272,7 @@ const Billing = () => {
                       </td>
                       <td className="py-3 pr-3 font-medium">{paymentTitle(p)}</td>
                       <td className="py-3 pr-3 text-muted-foreground">
-                        {p.type === "BOOKING" ? t("billing.booking") : t("billing.subscription")}
+                        {p.type === "BOOKING" ? "Бронирование" : "Подписка"}
                       </td>
                       <td className="py-3 pr-3 text-muted-foreground">{p.provider}</td>
                       <td className="py-3 pr-3 font-medium">
@@ -298,7 +297,7 @@ const Billing = () => {
         {subsHistory.length > 0 ? (
           <section className="glass-card p-6">
             <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-              <Download className="w-5 h-5 text-primary" /> {t("billing.subscriptionHistory")}
+              <Download className="w-5 h-5 text-primary" /> История подписок
             </h2>
             <div className="space-y-2 text-sm">
               {subsHistory.map((s) => (
@@ -307,7 +306,7 @@ const Billing = () => {
                   className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3"
                 >
                   <div>
-                    <p className="font-medium">{s.plan?.name ?? t("common.noneDash")}</p>
+                    <p className="font-medium">{s.plan?.name ?? "—"}</p>
                     <p className="text-xs text-muted-foreground">
                       {formatDate(s.currentPeriodStart)} → {formatDate(s.currentPeriodEnd)}
                     </p>

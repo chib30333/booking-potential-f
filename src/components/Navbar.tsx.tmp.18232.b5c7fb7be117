@@ -126,7 +126,7 @@ const Navbar = () => {
           <img src={logo} alt="Feelora logo" className="w-24 object-contain" />
         </Link>
 
-        <div className="hidden items-center gap-1 rounded-full bg-white/65 p-1 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:flex">
+        <div className="hidden items-center gap-1 rounded-full bg-white/65 p-1 lg:flex">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
 

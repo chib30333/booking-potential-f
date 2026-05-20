@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Activity, BarChart3, CheckCircle2, MapPin, Settings2, Star, Trash2, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -54,6 +55,7 @@ const ServiceForm = ({
   cities: Array<{ id: string; name: string }>;
   categories: Array<{ id: string; name: string }>;
 }) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<CreateServicePayload>({
     title: "",
@@ -70,12 +72,12 @@ const ServiceForm = ({
   const create = useMutation({
     mutationFn: createProviderService,
     onSuccess: () => {
-      toast.success("Услуга создана");
+      toast.success(t("providerDashboard.serviceCreated"));
       void queryClient.invalidateQueries({ queryKey: ["provider-services"] });
       setForm((f) => ({ ...f, title: "", description: "" }));
     },
     onError: (e) =>
-      toast.error(e instanceof Error ? e.message : "Не удалось создать услугу"),
+      toast.error(e instanceof Error ? e.message : t("providerDashboard.serviceCreateFailed")),
   });
 
   return (
@@ -84,23 +86,23 @@ const ServiceForm = ({
       onSubmit={(e) => {
         e.preventDefault();
         if (!form.title || !form.cityId || !form.categoryId) {
-          toast.error("Заполните название, город и категорию");
+          toast.error(t("providerDashboard.fillRequired"));
           return;
         }
         create.mutate({ ...form, priceAmount: Number(form.priceAmount) * 100 });
       }}
     >
-      <h3 className="text-lg font-semibold">Создать услугу</h3>
+      <h3 className="text-lg font-semibold">{t("providerDashboard.createService")}</h3>
 
       <input
         className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm"
-        placeholder="Название (например, Йога в саду)"
+        placeholder={t("providerDashboard.titlePlaceholder")}
         value={form.title}
         onChange={(e) => setForm({ ...form, title: e.target.value })}
       />
       <textarea
         className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm"
-        placeholder="Описание"
+        placeholder={t("providerDashboard.description")}
         rows={3}
         value={form.description ?? ""}
         onChange={(e) => setForm({ ...form, description: e.target.value })}
@@ -111,7 +113,7 @@ const ServiceForm = ({
           value={form.cityId}
           onChange={(e) => setForm({ ...form, cityId: e.target.value })}
         >
-          <option value="">Город</option>
+          <option value="">{t("common.city")}</option>
           {cities.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -123,7 +125,7 @@ const ServiceForm = ({
           value={form.categoryId}
           onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
         >
-          <option value="">Категория</option>
+          <option value="">{t("providerDashboard.category")}</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -146,9 +148,9 @@ const ServiceForm = ({
             "RELAX",
             "SOCIAL",
             "MINDFULNESS",
-          ].map((t) => (
-            <option key={t} value={t}>
-              {t}
+          ].map((tag) => (
+            <option key={tag} value={tag}>
+              {tag}
             </option>
           ))}
         </select>
@@ -156,7 +158,7 @@ const ServiceForm = ({
           type="number"
           min={1}
           className="rounded-2xl border border-slate-200 px-3 py-2 text-sm"
-          placeholder="Цена, ₽"
+          placeholder={t("providerDashboard.priceRub")}
           value={form.priceAmount}
           onChange={(e) =>
             setForm({ ...form, priceAmount: Number(e.target.value) || 0 })
@@ -167,7 +169,7 @@ const ServiceForm = ({
           min={15}
           step={15}
           className="rounded-2xl border border-slate-200 px-3 py-2 text-sm"
-          placeholder="Длительность, мин"
+          placeholder={t("providerDashboard.durationMin")}
           value={form.durationMinutes}
           onChange={(e) =>
             setForm({ ...form, durationMinutes: Number(e.target.value) || 60 })
@@ -177,7 +179,7 @@ const ServiceForm = ({
           type="number"
           min={1}
           className="rounded-2xl border border-slate-200 px-3 py-2 text-sm"
-          placeholder="Кол-во мест"
+          placeholder={t("providerDashboard.seats")}
           value={form.capacityDefault}
           onChange={(e) =>
             setForm({ ...form, capacityDefault: Number(e.target.value) || 1 })
@@ -190,7 +192,7 @@ const ServiceForm = ({
         disabled={create.isPending}
         className="w-full rounded-2xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
       >
-        {create.isPending ? "Создание..." : "Создать услугу"}
+        {create.isPending ? t("common.creating") : t("providerDashboard.createService")}
       </button>
     </form>
   );
@@ -201,6 +203,7 @@ const SlotForm = ({
 }: {
   services: Array<{ id: string; title: string; capacityDefault: number; priceAmount: number }>;
 }) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const tomorrow = useMemo(() => {
     const d = new Date();
@@ -219,17 +222,17 @@ const SlotForm = ({
   const create = useMutation({
     mutationFn: createProviderSlot,
     onSuccess: () => {
-      toast.success("Слот создан");
+      toast.success(t("providerDashboard.slotCreated"));
       void queryClient.invalidateQueries({ queryKey: ["provider-slots"] });
     },
     onError: (e) =>
-      toast.error(e instanceof Error ? e.message : "Не удалось создать слот"),
+      toast.error(e instanceof Error ? e.message : t("providerDashboard.slotCreateFailed")),
   });
 
   if (services.length === 0) {
     return (
       <div className="rounded-3xl border border-dashed border-slate-300 bg-white/60 p-5 text-sm text-muted-foreground">
-        Сначала создайте услугу, чтобы добавить слот.
+        {t("providerDashboard.createServiceFirst")}
       </div>
     );
   }
@@ -242,7 +245,7 @@ const SlotForm = ({
         create.mutate(form);
       }}
     >
-      <h3 className="text-lg font-semibold">Добавить слот</h3>
+      <h3 className="text-lg font-semibold">{t("providerDashboard.addSlot")}</h3>
 
       <select
         className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm"
@@ -258,7 +261,7 @@ const SlotForm = ({
 
       <div className="grid gap-3 md:grid-cols-2">
         <label className="text-sm">
-          Начало
+          {t("providerDashboard.startTime")}
           <input
             type="datetime-local"
             className="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2"
@@ -272,7 +275,7 @@ const SlotForm = ({
           />
         </label>
         <label className="text-sm">
-          Конец
+          {t("providerDashboard.endTime")}
           <input
             type="datetime-local"
             className="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2"
@@ -289,7 +292,7 @@ const SlotForm = ({
           type="number"
           min={1}
           className="rounded-2xl border border-slate-200 px-3 py-2 text-sm"
-          placeholder="Мест"
+          placeholder={t("providerDashboard.seatsShort")}
           value={form.capacity}
           onChange={(e) =>
             setForm({ ...form, capacity: Number(e.target.value) || 1 })
@@ -299,7 +302,7 @@ const SlotForm = ({
           type="number"
           min={1}
           className="rounded-2xl border border-slate-200 px-3 py-2 text-sm"
-          placeholder="Цена, копеек"
+          placeholder={t("providerDashboard.priceKopecks")}
           value={form.priceAmount}
           onChange={(e) =>
             setForm({ ...form, priceAmount: Number(e.target.value) || 1 })
@@ -312,13 +315,14 @@ const SlotForm = ({
         disabled={create.isPending}
         className="w-full rounded-2xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
       >
-        {create.isPending ? "Создание..." : "Добавить слот"}
+        {create.isPending ? t("common.creating") : t("providerDashboard.addSlot")}
       </button>
     </form>
   );
 };
 
 const AnalyticsPanel = () => {
+  const { t } = useTranslation();
   const analyticsQuery = useQuery({
     queryKey: ["provider-analytics"],
     queryFn: () => getProviderAnalyticsOverview(),
@@ -327,14 +331,14 @@ const AnalyticsPanel = () => {
   if (analyticsQuery.isLoading) {
     return (
       <div className="rounded-3xl border border-slate-200 bg-white p-5 text-sm text-muted-foreground">
-        Загрузка аналитики...
+        {t("providerDashboard.loadingAnalytics")}
       </div>
     );
   }
   if (analyticsQuery.isError || !analyticsQuery.data) {
     return (
       <div className="rounded-3xl border border-rose-200 bg-rose-50 p-5 text-sm text-rose-700">
-        Не удалось загрузить аналитику.
+        {t("providerDashboard.analyticsFailed")}
       </div>
     );
   }
@@ -342,11 +346,11 @@ const AnalyticsPanel = () => {
   const currency = "RUB";
 
   const tiles = [
-    { label: "Бронирования", value: a.kpis.bookingsCount, icon: Activity, color: "text-violet-600" },
-    { label: "Подтверждено", value: a.kpis.confirmedBookingsCount, icon: CheckCircle2, color: "text-emerald-600" },
-    { label: "Выручка", value: formatPrice(a.kpis.netRevenueMinor, currency), icon: BarChart3, color: "text-blue-600" },
-    { label: "Рейтинг", value: a.kpis.averageRating ? a.kpis.averageRating.toFixed(1) : "—", icon: Star, color: "text-amber-500" },
-    { label: "Заполняемость", value: `${a.kpis.fillRatePercent}%`, icon: MapPin, color: "text-rose-500" },
+    { label: t("providerDashboard.bookings"), value: a.kpis.bookingsCount, icon: Activity, color: "text-violet-600" },
+    { label: t("providerDashboard.confirmed"), value: a.kpis.confirmedBookingsCount, icon: CheckCircle2, color: "text-emerald-600" },
+    { label: t("providerDashboard.revenue"), value: formatPrice(a.kpis.netRevenueMinor, currency), icon: BarChart3, color: "text-blue-600" },
+    { label: t("providerDashboard.rating"), value: a.kpis.averageRating ? a.kpis.averageRating.toFixed(1) : t("common.noneDash"), icon: Star, color: "text-amber-500" },
+    { label: t("providerDashboard.occupancy"), value: `${a.kpis.fillRatePercent}%`, icon: MapPin, color: "text-rose-500" },
   ];
 
   const maxRevenue = Math.max(1, ...a.revenueSeries.map((p) => p.revenueMinor));
@@ -354,24 +358,24 @@ const AnalyticsPanel = () => {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        {tiles.map((t) => (
-          <div key={t.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <t.icon className={`w-5 h-5 ${t.color}`} />
-            <p className="mt-2 text-xl font-semibold">{t.value}</p>
-            <p className="text-xs text-muted-foreground">{t.label}</p>
+        {tiles.map((tile) => (
+          <div key={tile.label} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <tile.icon className={`w-5 h-5 ${tile.color}`} />
+            <p className="mt-2 text-xl font-semibold">{tile.value}</p>
+            <p className="text-xs text-muted-foreground">{tile.label}</p>
           </div>
         ))}
       </div>
 
       <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold">Выручка за период</h3>
+          <h3 className="text-sm font-semibold">{t("providerDashboard.revenuePeriod")}</h3>
           <span className="text-xs text-muted-foreground">
-            Прогноз на 30 дней: {formatPrice(a.projection.next30DaysRevenueMinor, currency)}
+            {t("providerDashboard.forecast30")}{formatPrice(a.projection.next30DaysRevenueMinor, currency)}
           </span>
         </div>
         {a.revenueSeries.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Нет данных за период.</p>
+          <p className="text-sm text-muted-foreground">{t("providerDashboard.noPeriodData")}</p>
         ) : (
           <div className="flex items-end gap-1 h-32">
             {a.revenueSeries.map((p) => (
@@ -388,13 +392,13 @@ const AnalyticsPanel = () => {
 
       {a.topServices.length > 0 ? (
         <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="mb-3 text-sm font-semibold">Топ услуг</h3>
+          <h3 className="mb-3 text-sm font-semibold">{t("providerDashboard.topServices")}</h3>
           <ul className="divide-y divide-slate-100 text-sm">
             {a.topServices.slice(0, 5).map((s) => (
               <li key={s.serviceId} className="flex items-center justify-between py-2">
                 <span className="font-medium">{s.title}</span>
                 <span className="text-xs text-muted-foreground">
-                  {s.bookingsCount} брон. · {formatPrice(s.revenueMinor, currency)}
+                  {s.bookingsCount} {t("providerDashboard.bookingsShort")}{formatPrice(s.revenueMinor, currency)}
                   {s.averageRating ? ` · ★ ${s.averageRating.toFixed(1)}` : ""}
                 </span>
               </li>
@@ -407,6 +411,7 @@ const AnalyticsPanel = () => {
 };
 
 const JoyMapToggle = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const profileQuery = useQuery({
     queryKey: ["provider-profile"],
@@ -418,13 +423,13 @@ const JoyMapToggle = () => {
     onSuccess: (data) => {
       toast.success(
         data.includeInJoyMap
-          ? "Ваши услуги будут попадать в Карту радости"
-          : "Услуги исключены из Карты радости"
+          ? t("providerDashboard.willJoinJoyMap")
+          : t("providerDashboard.excludedFromJoyMap")
       );
       void queryClient.invalidateQueries({ queryKey: ["provider-profile"] });
     },
     onError: (e) =>
-      toast.error(e instanceof Error ? e.message : "Не удалось обновить настройку"),
+      toast.error(e instanceof Error ? e.message : t("providerDashboard.settingUpdateFailed")),
   });
 
   const enabled = profileQuery.data?.includeInJoyMap ?? false;
@@ -432,9 +437,9 @@ const JoyMapToggle = () => {
   return (
     <div className="flex items-center justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
       <div>
-        <h3 className="text-sm font-semibold">Участвовать в AI Joy Map</h3>
+        <h3 className="text-sm font-semibold">{t("providerDashboard.joinJoyMap")}</h3>
         <p className="text-xs text-muted-foreground">
-          Ваши активные услуги будут предлагаться подписчикам в персональной карте недели.
+          {t("providerDashboard.joinJoyMapHint")}
         </p>
       </div>
       <button
@@ -453,29 +458,30 @@ const JoyMapToggle = () => {
 };
 
 const ServicesGrid = ({ services }: { services: ProviderServiceDto[] }) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const statusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: ProviderServiceDto["status"] }) =>
       updateProviderServiceStatus(id, status),
     onSuccess: () => {
-      toast.success("Статус обновлён");
+      toast.success(t("providerDashboard.statusUpdated"));
       void queryClient.invalidateQueries({ queryKey: ["provider-services"] });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Ошибка"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("common.error")),
   });
 
   const archiveMutation = useMutation({
     mutationFn: archiveProviderService,
     onSuccess: () => {
-      toast.success("Услуга архивирована");
+      toast.success(t("providerDashboard.serviceArchived"));
       void queryClient.invalidateQueries({ queryKey: ["provider-services"] });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Ошибка"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("common.error")),
   });
 
   if (services.length === 0) {
-    return <p className="text-muted-foreground">Услуги ещё не созданы.</p>;
+    return <p className="text-muted-foreground">{t("providerDashboard.noServices")}</p>;
   }
 
   return (
@@ -493,7 +499,7 @@ const ServicesGrid = ({ services }: { services: ProviderServiceDto[] }) => {
             {s.category.name} · {s.city.name}
           </p>
           <p className="mt-2 text-sm font-semibold">
-            {formatPrice(s.priceAmount, s.currency)} · {s.durationMinutes} мин
+            {formatPrice(s.priceAmount, s.currency)} · {s.durationMinutes} {t("providerDashboard.min")}
           </p>
 
           <div className="mt-3 flex flex-wrap gap-2">
@@ -503,7 +509,7 @@ const ServicesGrid = ({ services }: { services: ProviderServiceDto[] }) => {
                 disabled={statusMutation.isPending}
                 className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-200 disabled:opacity-60"
               >
-                <CheckCircle2 className="w-3 h-3" /> Опубликовать
+                <CheckCircle2 className="w-3 h-3" /> {t("providerDashboard.publish")}
               </button>
             ) : null}
             {s.status === "ACTIVE" ? (
@@ -512,7 +518,7 @@ const ServicesGrid = ({ services }: { services: ProviderServiceDto[] }) => {
                 disabled={statusMutation.isPending}
                 className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200 disabled:opacity-60"
               >
-                <Settings2 className="w-3 h-3" /> Скрыть
+                <Settings2 className="w-3 h-3" /> {t("providerDashboard.hide")}
               </button>
             ) : null}
             {s.status === "INACTIVE" ? (
@@ -521,18 +527,18 @@ const ServicesGrid = ({ services }: { services: ProviderServiceDto[] }) => {
                 disabled={statusMutation.isPending}
                 className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-200 disabled:opacity-60"
               >
-                <CheckCircle2 className="w-3 h-3" /> Активировать
+                <CheckCircle2 className="w-3 h-3" /> {t("providerDashboard.activate")}
               </button>
             ) : null}
             {s.status !== "ARCHIVED" ? (
               <button
                 onClick={() => {
-                  if (confirm(`Архивировать "${s.title}"?`)) archiveMutation.mutate(s.id);
+                  if (confirm(`${t("providerDashboard.archive")} "${s.title}"?`)) archiveMutation.mutate(s.id);
                 }}
                 disabled={archiveMutation.isPending}
                 className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 hover:bg-rose-100 disabled:opacity-60"
               >
-                <Trash2 className="w-3 h-3" /> Архив
+                <Trash2 className="w-3 h-3" /> {t("providerDashboard.archived")}
               </button>
             ) : null}
           </div>
@@ -543,6 +549,7 @@ const ServicesGrid = ({ services }: { services: ProviderServiceDto[] }) => {
 };
 
 const ProviderDashboard = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const referenceData = useQuery({
@@ -568,11 +575,11 @@ const ProviderDashboard = () => {
   const cancelSlotMutation = useMutation({
     mutationFn: cancelProviderSlot,
     onSuccess: () => {
-      toast.success("Слот отменён");
+      toast.success(t("providerDashboard.slotCancelled"));
       void queryClient.invalidateQueries({ queryKey: ["provider-slots"] });
       void queryClient.invalidateQueries({ queryKey: ["provider-bookings"] });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Ошибка"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : t("common.error")),
   });
 
   const services = servicesQuery.data?.items ?? [];
@@ -588,18 +595,18 @@ const ProviderDashboard = () => {
             <p className="text-sm uppercase tracking-[0.18em] text-violet-500">
               Provider workspace
             </p>
-            <h1 className="text-3xl font-bold">Управление вашими услугами</h1>
+            <h1 className="text-3xl font-bold">{t("providerDashboard.manageServices")}</h1>
           </div>
           <a
             href="/profile"
             className="rounded-full bg-muted px-4 py-2 text-sm font-medium hover:bg-muted/70"
           >
-            Профиль
+            {t("providerDashboard.profile")}
           </a>
         </div>
 
         <section className="mb-10">
-          <h2 className="mb-4 text-xl font-semibold">Аналитика</h2>
+          <h2 className="mb-4 text-xl font-semibold">{t("providerDashboard.analytics")}</h2>
           <AnalyticsPanel />
         </section>
 
@@ -616,20 +623,20 @@ const ProviderDashboard = () => {
         </div>
 
         <section className="mt-10">
-          <h2 className="mb-4 text-xl font-semibold">Услуги</h2>
+          <h2 className="mb-4 text-xl font-semibold">{t("providerDashboard.services")}</h2>
           {servicesQuery.isLoading ? (
-            <p className="text-muted-foreground">Загрузка...</p>
+            <p className="text-muted-foreground">{t("common.loadingShort")}</p>
           ) : (
             <ServicesGrid services={services} />
           )}
         </section>
 
         <section className="mt-10">
-          <h2 className="mb-4 text-xl font-semibold">Ближайшие слоты</h2>
+          <h2 className="mb-4 text-xl font-semibold">{t("providerDashboard.upcomingSlots")}</h2>
           {slotsQuery.isLoading ? (
-            <p className="text-muted-foreground">Загрузка...</p>
+            <p className="text-muted-foreground">{t("common.loadingShort")}</p>
           ) : slots.length === 0 ? (
-            <p className="text-muted-foreground">Слоты ещё не добавлены.</p>
+            <p className="text-muted-foreground">{t("providerDashboard.noSlots")}</p>
           ) : (
             <div className="space-y-2">
               {slots.slice(0, 12).map((s) => (
@@ -645,20 +652,20 @@ const ProviderDashboard = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right text-xs text-muted-foreground">
-                      <p>{s.bookedCount}/{s.capacity} занято</p>
+                      <p>{s.bookedCount}/{s.capacity} {t("providerDashboard.booked")}</p>
                       <p>{formatPrice(s.priceAmount, s.currency)}</p>
                     </div>
                     {s.status === "ACTIVE" ? (
                       <button
                         onClick={() => {
-                          if (confirm("Отменить этот слот? Все бронирования будут отменены.")) {
+                          if (confirm(t("providerDashboard.cancelSlotConfirm"))) {
                             cancelSlotMutation.mutate(s.id);
                           }
                         }}
                         disabled={cancelSlotMutation.isPending}
                         className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-medium text-rose-700 hover:bg-rose-100 disabled:opacity-60"
                       >
-                        <X className="w-3 h-3" /> Отменить
+                        <X className="w-3 h-3" /> {t("providerDashboard.cancel")}
                       </button>
                     ) : (
                       <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-600">
@@ -673,11 +680,11 @@ const ProviderDashboard = () => {
         </section>
 
         <section className="mt-10">
-          <h2 className="mb-4 text-xl font-semibold">Бронирования</h2>
+          <h2 className="mb-4 text-xl font-semibold">{t("providerDashboard.bookings")}</h2>
           {bookingsQuery.isLoading ? (
-            <p className="text-muted-foreground">Загрузка...</p>
+            <p className="text-muted-foreground">{t("common.loadingShort")}</p>
           ) : bookings.length === 0 ? (
-            <p className="text-muted-foreground">Бронирований пока нет.</p>
+            <p className="text-muted-foreground">{t("providerDashboard.noBookings")}</p>
           ) : (
             <div className="space-y-2">
               {bookings.slice(0, 10).map((b) => (

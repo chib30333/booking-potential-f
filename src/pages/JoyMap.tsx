@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import {
@@ -85,6 +86,7 @@ const OnboardingForm = ({
   cities: Array<{ id: string; name: string }>;
   onSubmitted: () => void;
 }) => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [age, setAge] = useState("28");
   const [cityId, setCityId] = useState(cities[0]?.id ?? "");
@@ -106,13 +108,13 @@ const OnboardingForm = ({
           .map(([emotion, score]) => ({ emotion, score })),
       }),
     onSuccess: () => {
-      toast.success("Профиль сохранён. Сейчас сгенерируем карту.");
+      toast.success(t("joyMap.profileSaved"));
       void queryClient.invalidateQueries({ queryKey: ["customer-profile"] });
       onSubmitted();
     },
     onError: (error) =>
       toast.error(
-        error instanceof Error ? error.message : "Не удалось сохранить профиль"
+        error instanceof Error ? error.message : t("joyMap.profileSaveFailed")
       ),
   });
 
@@ -126,22 +128,22 @@ const OnboardingForm = ({
       onSubmit={(e) => {
         e.preventDefault();
         if (!cityId) {
-          toast.error("Выберите город");
+          toast.error(t("joyMap.selectCity"));
           return;
         }
         submit.mutate();
       }}
     >
       <div>
-        <h2 className="text-2xl font-bold">Настройте свою карту радости</h2>
+        <h2 className="text-2xl font-bold">{t("joyMap.setupTitle")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Расскажите о себе, чтобы AI составил еженедельный план активностей.
+          {t("joyMap.setupSubtitle")}
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium">Возраст</span>
+          <span className="text-sm font-medium">{t("joyMap.age")}</span>
           <input
             type="number"
             min={13}
@@ -153,7 +155,7 @@ const OnboardingForm = ({
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium">Город</span>
+          <span className="text-sm font-medium">{t("joyMap.city")}</span>
           <select
             value={cityId}
             onChange={(e) => setCityId(e.target.value)}
@@ -169,19 +171,19 @@ const OnboardingForm = ({
       </div>
 
       <label className="block">
-        <span className="text-sm font-medium">Что вас сейчас вдохновляет?</span>
+        <span className="text-sm font-medium">{t("joyMap.moodTitle")}</span>
         <textarea
           value={moodNotes}
           onChange={(e) => setMoodNotes(e.target.value)}
           rows={3}
-          placeholder="Напишите пару слов о настроении и желаниях"
+          placeholder={t("joyMap.moodPlaceholder")}
           className="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-2.5 text-sm"
         />
       </label>
 
       <div>
         <p className="mb-2 text-sm font-medium">
-          Какие эмоции вам важнее всего? (1–5)
+          {t("joyMap.emotionsPick")}
         </p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {EMOTIONS.map((emotion) => {
@@ -221,13 +223,14 @@ const OnboardingForm = ({
         disabled={submit.isPending}
         className="w-full rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
       >
-        {submit.isPending ? "Сохраняем..." : "Сохранить и продолжить"}
+        {submit.isPending ? t("joyMap.saving") : t("joyMap.saveContinue")}
       </button>
     </form>
   );
 };
 
 const JoyMap = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const subscriptionQuery = useQuery({
@@ -259,12 +262,12 @@ const JoyMap = () => {
   const generate = useMutation({
     mutationFn: () => generateJoyMap(false),
     onSuccess: () => {
-      toast.success("Свежая карта готова");
+      toast.success(t("joyMap.freshReady"));
       void queryClient.invalidateQueries({ queryKey: ["joy-map-current"] });
     },
     onError: (error) =>
       toast.error(
-        error instanceof Error ? error.message : "Не удалось сгенерировать карту"
+        error instanceof Error ? error.message : t("joyMap.generateFailed")
       ),
   });
 
@@ -285,7 +288,7 @@ const JoyMap = () => {
             <p className="text-sm uppercase tracking-[0.18em] text-violet-500">
               AI Joy Map
             </p>
-            <h1 className="text-3xl font-bold">Ваш недельный маршрут радости</h1>
+            <h1 className="text-3xl font-bold">{t("joyMap.weeklyRoute")}</h1>
           </div>
 
           {profileQuery.data?.onboardingDone ? (
@@ -295,28 +298,28 @@ const JoyMap = () => {
               disabled={generate.isPending}
               className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
             >
-              {generate.isPending ? "Генерация..." : "Сгенерировать заново"}
+              {generate.isPending ? t("joyMap.generating") : t("joyMap.regenerate")}
             </button>
           ) : null}
         </div>
 
         {subscriptionQuery.isLoading ? (
-          <p className="text-muted-foreground">Проверяем подписку...</p>
+          <p className="text-muted-foreground">{t("joyMap.checkingSubscription")}</p>
         ) : !hasActiveSubscription ? (
           <JoyMapPaywall />
         ) : profileQuery.isLoading ? (
-          <p className="text-muted-foreground">Загрузка профиля...</p>
+          <p className="text-muted-foreground">{t("joyMap.loadingProfile")}</p>
         ) : !profileQuery.data?.onboardingDone ? (
           <OnboardingForm
             cities={cities}
             onSubmitted={() => generate.mutate()}
           />
         ) : currentMapQuery.isLoading ? (
-          <p className="text-muted-foreground">Загружаем карту...</p>
+          <p className="text-muted-foreground">{t("joyMap.loadingMap")}</p>
         ) : !currentMapQuery.data ? (
           <div className="rounded-3xl border border-dashed border-slate-300 bg-white/60 p-10 text-center">
             <p className="mb-4 text-muted-foreground">
-              У вас ещё нет карты на эту неделю.
+              {t("joyMap.noMapYet")}
             </p>
             <button
               type="button"
@@ -324,14 +327,14 @@ const JoyMap = () => {
               disabled={generate.isPending}
               className="rounded-full bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
             >
-              {generate.isPending ? "Генерация..." : "Сгенерировать карту"}
+              {generate.isPending ? t("joyMap.generating") : t("joyMap.generateMap")}
             </button>
           </div>
         ) : (
           <div className="space-y-6">
             <div className="rounded-3xl bg-linear-to-br from-violet-100 via-pink-50 to-amber-50 p-6">
               <p className="text-xs uppercase tracking-[0.18em] text-violet-500">
-                Неделя c {new Date(currentMapQuery.data.weekStart).toLocaleDateString("ru-RU")}
+                {t("joyMap.weekOf")}{new Date(currentMapQuery.data.weekStart).toLocaleDateString("ru-RU")}
               </p>
               <p className="mt-2 text-base text-foreground">
                 {currentMapQuery.data.summary}
@@ -347,7 +350,7 @@ const JoyMap = () => {
             </div>
 
             <p className="text-xs text-muted-foreground">
-              {WEEKDAY_LABELS.length} дней × персонализированные предложения от AI
+              {WEEKDAY_LABELS.length} {t("joyMap.daysSuffix")}
             </p>
           </div>
         )}

@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { listSubscriptionPlans } from "@/shared/api/subscriptions";
 import { createSubscriptionCheckout } from "@/shared/api/payments";
@@ -16,6 +17,7 @@ const formatPrice = (amountMinor: number, currency: string) => {
 };
 
 const JoyMapPaywall = () => {
+  const { t } = useTranslation();
   const plansQuery = useQuery({
     queryKey: ["subscription-plans"],
     queryFn: listSubscriptionPlans,
@@ -28,7 +30,7 @@ const JoyMapPaywall = () => {
     },
     onError: (e) =>
       toast.error(
-        e instanceof Error ? e.message : "Не удалось перейти к оплате"
+        e instanceof Error ? e.message : t("joyMapPaywall.checkoutFailed")
       ),
   });
 
@@ -41,12 +43,12 @@ const JoyMapPaywall = () => {
         Joy Map · Premium
       </p>
       <h2 className="mt-2 text-2xl font-bold">
-        AI-карта счастья на каждую неделю
+        {t("joyMapPaywall.title")}
       </h2>
       <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-        Подпишитесь, чтобы получать персональные планы активностей, основанные
-        на ваших эмоциях, городе и настроении. Карта обновляется по запросу и
-        предлагает реальные слоты от проверенных провайдеров.
+        {t("joyMapPaywall.description1")}{" "}
+        {t("joyMapPaywall.description2")}{" "}
+        {t("joyMapPaywall.description3")}
       </p>
 
       <div className="mt-6 flex flex-wrap items-baseline gap-3">
@@ -55,7 +57,7 @@ const JoyMapPaywall = () => {
             ? formatPrice(joyPlan.priceAmount, joyPlan.currency)
             : "499 ₽"}
         </p>
-        <p className="text-sm text-muted-foreground">в месяц</p>
+        <p className="text-sm text-muted-foreground">{t("joyMapPaywall.perMonth")}</p>
       </div>
 
       <button
@@ -64,11 +66,11 @@ const JoyMapPaywall = () => {
         onClick={() => joyPlan && checkout.mutate(joyPlan.code)}
         className="mt-6 rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
       >
-        {checkout.isPending ? "Переходим к оплате..." : "Оформить подписку"}
+        {checkout.isPending ? t("joyMapPaywall.redirecting") : t("joyMapPaywall.subscribe")}
       </button>
 
       <p className="mt-3 text-xs text-muted-foreground">
-        Оплата через защищённый Stripe Checkout. Отмена в любой момент.
+        {t("joyMapPaywall.stripeNote")}
       </p>
     </div>
   );

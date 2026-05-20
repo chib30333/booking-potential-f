@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Clock, MapPin, QrCode, X } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import PageHeader from "@/components/shared/PageHeader";
@@ -18,6 +19,7 @@ const moodConfig: Record<string, { bg: string; border: string; dot: string; labe
 };
 
 const Calendar = () => {
+    const { t } = useTranslation();
     const [currentMonth, setCurrentMonth] = useState(new Date(2026, 3, 1)); // April 2026
     const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
     const [view, setView] = useState<"month" | "timeline">("timeline");
@@ -29,15 +31,15 @@ const Calendar = () => {
         onSuccess: (data) => {
             toast.success(
                 data.refundEligible
-                    ? "Бронирование отменено. Возврат будет обработан в течение 5 дней."
-                    : "Бронирование отменено."
+                    ? t("calendar.bookingCancelledRefund")
+                    : t("calendar.bookingCancelled")
             );
             void queryClient.invalidateQueries({ queryKey: ["my-bookings-calendar"] });
             void queryClient.invalidateQueries({ queryKey: ["profile-customer-bookings"] });
             setSelectedEvent(null);
         },
         onError: (e) =>
-            toast.error(e instanceof Error ? e.message : "Не удалось отменить бронирование"),
+            toast.error(e instanceof Error ? e.message : t("calendar.cancelFailed")),
     });
 
     const isCancellable = (event: CalendarEvent | null) => {
@@ -260,7 +262,7 @@ const Calendar = () => {
                             {selectedEvent.qrCodeValue ? (
                                 <div className="mt-6 rounded-2xl border border-border bg-background/60 p-4">
                                     <div className="flex items-center gap-2 text-sm font-medium text-foreground mb-2">
-                                        <QrCode className="w-4 h-4" /> QR-код для входа
+                                        <QrCode className="w-4 h-4" /> {t("calendar.qrEntry")}
                                     </div>
                                     <img
                                         alt="Booking QR code"
@@ -279,11 +281,11 @@ const Calendar = () => {
                                         disabled={cancelMutation.isPending}
                                         className="flex-1 py-3 rounded-xl border border-border font-semibold hover:bg-muted disabled:opacity-60"
                                     >
-                                        {cancelMutation.isPending ? "Отмена..." : "Отменить"}
+                                        {cancelMutation.isPending ? t("calendar.cancelling") : t("common.cancel")}
                                     </button>
                                 ) : null}
                                 <button className="flex-1 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors">
-                                    Подробнее
+                                    {t("calendar.details")}
                                 </button>
                             </div>
                         </motion.div>

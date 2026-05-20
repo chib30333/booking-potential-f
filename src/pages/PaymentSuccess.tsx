@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { QRCodeSVG } from "qrcode.react";
 import Navbar from "@/components/Navbar";
 import { getMyBookingById } from "@/shared/api/bookings";
@@ -28,6 +29,7 @@ const formatSlotDate = (iso: string) =>
   });
 
 const PaymentSuccess = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const bookingId = searchParams.get("bookingId") ?? "";
   const queryClient = useQueryClient();
@@ -55,26 +57,26 @@ const PaymentSuccess = () => {
       <div className="container mx-auto max-w-2xl px-6 pt-24 pb-12">
         {!bookingId ? (
           <div className="space-y-3 rounded-3xl border border-rose-200 bg-rose-50 p-8">
-            <p className="text-rose-700">Идентификатор бронирования не найден.</p>
+            <p className="text-rose-700">{t("paymentSuccess.noBookingId")}</p>
             <Link
               to="/calendar"
               className="inline-block rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
             >
-              К моим бронированиям
+              {t("paymentSuccess.toBookings")}
             </Link>
           </div>
         ) : bookingQuery.isLoading ? (
-          <p className="text-muted-foreground">Загружаем ваше бронирование...</p>
+          <p className="text-muted-foreground">{t("paymentSuccess.loadingBooking")}</p>
         ) : bookingQuery.isError || !booking ? (
           <div className="space-y-3 rounded-3xl border border-rose-200 bg-rose-50 p-8">
             <p className="text-rose-700">
-              Не удалось загрузить бронирование. Если оплата прошла, оно появится в календаре.
+              {t("paymentSuccess.loadFailed")}
             </p>
             <Link
               to="/calendar"
               className="inline-block rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
             >
-              К моим бронированиям
+              {t("paymentSuccess.toBookings")}
             </Link>
           </div>
         ) : (
@@ -84,12 +86,10 @@ const PaymentSuccess = () => {
                 {isPending ? "⏳" : "✓"}
               </div>
               <h1 className="text-2xl font-bold text-foreground">
-                {isPending ? "Оплата обрабатывается" : "Бронирование подтверждено"}
+                {isPending ? t("paymentSuccess.processing") : t("paymentSuccess.confirmed")}
               </h1>
               <p className="text-sm text-muted-foreground">
-                {isPending
-                  ? "Платёж получен. Подтверждение появится здесь автоматически в течение пары секунд."
-                  : "Покажите QR-код на входе. Мы также отправили детали на вашу почту."}
+                {isPending ? t("paymentSuccess.processingNote") : t("paymentSuccess.confirmedNote")}
               </p>
             </div>
 
@@ -106,11 +106,11 @@ const PaymentSuccess = () => {
               <p className="mt-1 text-sm text-muted-foreground">
                 {formatPrice(booking.totalAmount, booking.currency)} ·{" "}
                 {booking.status === "CONFIRMED"
-                  ? "Подтверждено"
+                  ? t("paymentSuccess.statusConfirmed")
                   : booking.status === "COMPLETED"
-                  ? "Завершено"
+                  ? t("paymentSuccess.statusCompleted")
                   : booking.status === "PENDING_PAYMENT"
-                  ? "Ожидает оплаты"
+                  ? t("paymentSuccess.statusPending")
                   : booking.status}
               </p>
             </div>
@@ -124,12 +124,12 @@ const PaymentSuccess = () => {
                   includeMargin
                 />
                 <p className="text-xs text-muted-foreground">
-                  Код бронирования: {booking.id.slice(0, 8).toUpperCase()}
+                  {t("paymentSuccess.bookingCode")}{booking.id.slice(0, 8).toUpperCase()}
                 </p>
               </div>
             ) : isPending ? (
               <p className="text-center text-sm text-muted-foreground">
-                QR-код появится сразу после подтверждения оплаты.
+                {t("paymentSuccess.qrPlaceholder")}
               </p>
             ) : null}
 
@@ -138,13 +138,13 @@ const PaymentSuccess = () => {
                 to="/calendar"
                 className="flex-1 rounded-full bg-slate-900 px-5 py-3 text-center text-sm font-semibold text-white hover:bg-slate-800"
               >
-                Мои бронирования
+                {t("paymentSuccess.myBookings")}
               </Link>
               <Link
                 to="/explore"
                 className="flex-1 rounded-full border border-slate-200 px-5 py-3 text-center text-sm font-semibold text-foreground hover:bg-slate-50"
               >
-                Найти ещё
+                {t("paymentSuccess.findMore")}
               </Link>
             </div>
           </div>

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Calendar as CalendarIcon, Heart, Sparkles, Star, Settings, Briefcase } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -24,6 +25,7 @@ const formatRub = (minor: number, currency = "RUB") => {
 };
 
 const Profile = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const token = getStoredAccessToken();
   const {
@@ -46,11 +48,11 @@ const Profile = () => {
   const cancelSub = useMutation({
     mutationFn: () => cancelMySubscription(false),
     onSuccess: () => {
-      toast.success("Подписка будет отменена в конце оплаченного периода");
+      toast.success(t("profile.subscriptionCancelAtEnd"));
       void queryClient.invalidateQueries({ queryKey: ["my-subscription"] });
     },
     onError: (e) =>
-      toast.error(e instanceof Error ? e.message : "Не удалось отменить подписку"),
+      toast.error(e instanceof Error ? e.message : t("profile.subscriptionCancelFailed")),
   });
 
   const subscription = subscriptionQuery.data;
@@ -87,20 +89,20 @@ const Profile = () => {
                     to="/provider"
                     className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
                   >
-                    <Briefcase className="w-4 h-4" /> Кабинет провайдера
+                    <Briefcase className="w-4 h-4" /> {t("profile.providerDashboard")}
                   </Link>
                 ) : null}
                 <Link
                   to="/calendar"
                   className="inline-flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm font-medium hover:bg-muted/70"
                 >
-                  <CalendarIcon className="w-4 h-4" /> Календарь
+                  <CalendarIcon className="w-4 h-4" /> {t("profile.calendar")}
                 </Link>
                 <Link
                   to="/joy-map"
                   className="inline-flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm font-medium hover:bg-muted/70"
                 >
-                  <Sparkles className="w-4 h-4" /> Карта радости
+                  <Sparkles className="w-4 h-4" /> {t("profile.joyMap")}
                 </Link>
               </div>
             </div>
@@ -128,28 +130,28 @@ const Profile = () => {
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
                 <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-                  <Star className="w-5 h-5 text-primary" /> Подписка Joy Map
+                  <Star className="w-5 h-5 text-primary" /> {t("profile.joyMapSubscription")}
                 </h2>
                 {subscriptionQuery.isLoading ? (
-                  <p className="text-sm text-muted-foreground mt-1">Загрузка...</p>
+                  <p className="text-sm text-muted-foreground mt-1">{t("common.loadingShort")}</p>
                 ) : subscriptionActive ? (
                   <div className="text-sm text-muted-foreground mt-1 space-y-1">
                     <p>
-                      Статус: <span className="font-medium text-foreground">{subscription?.status}</span>
+                      {t("profile.statusLabel")}<span className="font-medium text-foreground">{subscription?.status}</span>
                       {subscription?.plan ? (
-                        <> · {formatRub(subscription.plan.priceAmount, subscription.plan.currency)} / мес</>
+                        <> · {formatRub(subscription.plan.priceAmount, subscription.plan.currency)} {t("profile.perMonth")}</>
                       ) : null}
                     </p>
                     {subscription?.currentPeriodEnd ? (
                       <p>
-                        Активна до {new Date(subscription.currentPeriodEnd).toLocaleDateString("ru-RU")}
-                        {subscription.cancelAtPeriodEnd ? " · отменяется по окончании" : ""}
+                        {t("profile.activeUntil")}{new Date(subscription.currentPeriodEnd).toLocaleDateString("ru-RU")}
+                        {subscription.cancelAtPeriodEnd ? ` ${t("profile.cancellingAtPeriodEnd")}` : ""}
                       </p>
                     ) : null}
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground mt-1">
-                    Подключите подписку, чтобы получать персональную карту радости каждую неделю.
+                    {t("profile.joinPrompt")}
                   </p>
                 )}
               </div>
@@ -160,14 +162,14 @@ const Profile = () => {
                     disabled={cancelSub.isPending}
                     className="rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-muted disabled:opacity-60"
                   >
-                    {cancelSub.isPending ? "Отмена..." : "Отменить подписку"}
+                    {cancelSub.isPending ? t("profile.cancelling") : t("profile.cancelSubscription")}
                   </button>
                 ) : null}
                 <Link
                   to="/joy-map"
                   className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
                 >
-                  {subscriptionActive ? "Открыть карту" : "Оформить"}
+                  {subscriptionActive ? t("profile.openMap") : t("profile.subscribe")}
                 </Link>
               </div>
             </div>
@@ -176,7 +178,7 @@ const Profile = () => {
           {/* Emotional Journey */}
           <div className="glass-card p-6 mb-8">
             <h2 className="text-lg font-bold text-foreground mb-6 flex items-center gap-2">
-              <Heart className="w-5 h-5 text-primary" /> Эмоциональный профиль
+              <Heart className="w-5 h-5 text-primary" /> {t("profile.emotionalProfile")}
             </h2>
             <div className="space-y-4">
               {emotionStats.map((item) => (
@@ -201,16 +203,16 @@ const Profile = () => {
           {/* Recent bookings */}
           <div className="glass-card p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-foreground">Последние бронирования</h2>
+              <h2 className="text-lg font-bold text-foreground">{t("profile.recentBookings")}</h2>
               <Link to="/calendar" className="text-sm font-medium text-primary hover:underline">
-                Все →
+                {t("profile.allLink")}
               </Link>
             </div>
             {recentBookings.length === 0 ? (
               <p className="text-sm text-muted-foreground">
-                Бронирований пока нет.{" "}
+                {t("profile.noBookings")}{" "}
                 <Link to="/explore" className="font-medium text-primary">
-                  Найти впечатления →
+                  {t("profile.findExperiences")}
                 </Link>
               </p>
             ) : (
@@ -253,7 +255,7 @@ const Profile = () => {
           {/* Settings footer */}
           <div className="mt-8 flex items-center justify-end text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1">
-              <Settings className="w-3 h-3" /> Управляйте подпиской и данными в этом разделе.
+              <Settings className="w-3 h-3" /> {t("profile.manageSubscriptionHint")}
             </span>
           </div>
         </div>

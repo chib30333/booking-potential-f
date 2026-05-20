@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import Navbar from "@/components/Navbar";
 import {
@@ -35,6 +36,7 @@ const formatSlotDate = (iso: string) =>
   });
 
 const ServiceDetail = () => {
+  const { t } = useTranslation();
   const { slug = "" } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const me = useAuthMe();
@@ -65,7 +67,7 @@ const ServiceDetail = () => {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Не удалось создать бронирование. Попробуйте ещё раз."
+          : t("serviceDetail.bookingFailed")
       );
     },
   });
@@ -81,7 +83,7 @@ const ServiceDetail = () => {
 
   const handleBook = () => {
     if (!selectedSlotId) {
-      toast.error("Выберите время для бронирования");
+      toast.error(t("serviceDetail.selectTime"));
       return;
     }
 
@@ -100,15 +102,15 @@ const ServiceDetail = () => {
       <Navbar />
       <div className="container mx-auto px-6 pt-24 pb-12">
         {serviceQuery.isLoading ? (
-          <p className="text-muted-foreground">Загрузка услуги...</p>
+          <p className="text-muted-foreground">{t("serviceDetail.loadingService")}</p>
         ) : serviceQuery.isError || !service ? (
           <div className="space-y-3">
-            <p className="text-rose-600">Услуга не найдена.</p>
+            <p className="text-rose-600">{t("serviceDetail.notFound")}</p>
             <Link
               to="/explore"
               className="rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
             >
-              Вернуться в каталог
+              {t("serviceDetail.backToCatalog")}
             </Link>
           </div>
         ) : (
@@ -123,7 +125,7 @@ const ServiceDetail = () => {
                   />
                 ) : (
                   <div className="flex h-72 w-full items-center justify-center text-muted-foreground">
-                    Изображение скоро появится
+                    {t("serviceDetail.imageComingSoon")}
                   </div>
                 )}
               </div>
@@ -136,9 +138,9 @@ const ServiceDetail = () => {
                   {service.title}
                 </h1>
                 <p className="text-base text-muted-foreground">
-                  Провайдер: {service.provider.brandName} ·{" "}
+                  {t("serviceDetail.providerPrefix")}{service.provider.brandName} ·{" "}
                   {service.provider.averageRating.toFixed(1)} ★ (
-                  {service.provider.totalReviews} отзывов)
+                  {service.provider.totalReviews} {t("serviceDetail.reviewsSuffix")}
                 </p>
               </div>
 
@@ -151,15 +153,15 @@ const ServiceDetail = () => {
               <div className="grid grid-cols-2 gap-4 rounded-2xl bg-muted/40 p-5 sm:grid-cols-3">
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                    Длительность
+                    {t("serviceDetail.duration")}
                   </p>
                   <p className="text-lg font-semibold">
-                    {service.durationMinutes} мин
+                    {service.durationMinutes} {t("serviceDetail.min")}
                   </p>
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                    Цена
+                    {t("serviceDetail.price")}
                   </p>
                   <p className="text-lg font-semibold">
                     {formatPrice(service.priceAmount, service.currency)}
@@ -167,7 +169,7 @@ const ServiceDetail = () => {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                    Эмоция
+                    {t("serviceDetail.emotion")}
                   </p>
                   <p className="text-lg font-semibold">{service.emotionTag}</p>
                 </div>
@@ -175,13 +177,13 @@ const ServiceDetail = () => {
             </div>
 
             <aside className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="text-lg font-semibold">Выберите время</h2>
+              <h2 className="text-lg font-semibold">{t("serviceDetail.chooseTime")}</h2>
 
               {slotsQuery.isLoading ? (
-                <p className="text-sm text-muted-foreground">Загрузка слотов...</p>
+                <p className="text-sm text-muted-foreground">{t("serviceDetail.loadingSlots")}</p>
               ) : sortedSlots.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  Сейчас нет доступных слотов. Загляните позже.
+                  {t("serviceDetail.noSlots")}
                 </p>
               ) : (
                 <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
@@ -215,7 +217,7 @@ const ServiceDetail = () => {
                             active ? "text-white/70" : "text-muted-foreground"
                           }`}
                         >
-                          {slot.availableCount} мест осталось
+                          {slot.availableCount} {t("serviceDetail.seatsLeft")}
                         </div>
                       </button>
                     );
@@ -230,12 +232,12 @@ const ServiceDetail = () => {
                 className="w-full rounded-2xl bg-slate-900 px-5 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {checkoutMutation.isPending
-                  ? "Переходим к оплате..."
-                  : "Забронировать и оплатить"}
+                  ? t("serviceDetail.redirectingPayment")
+                  : t("serviceDetail.bookAndPay")}
               </button>
 
               <p className="text-xs text-muted-foreground">
-                После бронирования вы попадёте на безопасную страницу оплаты Stripe.
+                {t("serviceDetail.stripeNote")}
               </p>
             </aside>
           </div>
